@@ -259,6 +259,12 @@ function init() {
 	play_status = false;
 	set_scroll(tanks[0].x, tanks[0].y, tanks[0].id);
 	set_scroll(tanks[1].x, tanks[1].y, tanks[1].id);
+
+	if (window.innerHeight === screen.height) {
+		console.log("Browser is in full-screen mode");
+	} else {
+		console.log("Browser is not in full-screen mode");
+	}
 }
 
 // Set the tagged tank
@@ -566,7 +572,7 @@ function keyListener(e) {
 function play_game() {
 	check_move(tanks[0], tanks[1]);
 	check_move(tanks[1], tanks[0]);
-	//check_move(tanks[2], tanks[0], tanks[1]);
+
 	$("#timer").html(timer);
 	$("#tag_timer").html(tag_timer);
 	if (tag_timer > 0) {
@@ -595,5 +601,10 @@ window.addEventListener("resize", function (event) {
 	for (var i = 0; i < tanks.length; i++) {
 		console.log("resize tank " + i + "");
 		set_scroll(tanks[i].x, tanks[i].y, tanks[i].id);
+	}
+	if (window.innerHeight === screen.height) {
+		console.log("Browser is in full-screen mode");
+	} else {
+		console.log("Browser is not in full-screen mode");
 	}
 });
