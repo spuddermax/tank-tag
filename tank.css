@@ -43,6 +43,7 @@ body {
 	height: 3000px;
 	background: transparent url(images/grass_832.jpg) repeat;
 	position: relative;
+	border: 20px dashed #990000cc;
 }
 .tank {
 	display: block;
@@ -159,6 +160,15 @@ body {
 }
 .tree_2 {
 	background-image: url(images/tree_2.png);
+}
+.tree_3 {
+	background-image: url(images/tree_3.png);
+}
+.tree_4 {
+	background-image: url(images/tree_4.png);
+}
+.tree_5 {
+	background-image: url(images/tree_5.png);
 }
 .base {
 	z-index: 1;

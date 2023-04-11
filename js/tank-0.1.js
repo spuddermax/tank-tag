@@ -17,6 +17,7 @@ const treeTrunkXOffset = 58;
 const treeTrunkYOffset = 176;
 
 const baseSeparation = 400;
+const mapBorderBuffer = 0;
 
 // Define tank, base, and tree arrays
 const tanks = [];
@@ -149,6 +150,7 @@ for (let i = 0; i < numTanks; i++) {
 	tanks.push(tank);
 }
 
+// Create the trees.
 for (let i = 0; i < numTrees; i++) {
 	let treeX = 0;
 	let treeY = 0;
@@ -167,8 +169,8 @@ for (let i = 0; i < numTrees; i++) {
 		});
 	}
 
-	// Assign the class a number between 1 and 2
-	const treeClass = Math.floor(Math.random() * 2) + 1;
+	// Assign the class a number between 1 and 5.
+	const treeClass = Math.floor(Math.random() * 5) + 1;
 
 	const tree = new Sprite({
 		id: `tree_${i}`,
@@ -397,15 +399,15 @@ function check_move(tank_obj, tank2_obj) {
 		}
 
 		// Check for canvas boundary collision
-		if (tank_obj.x < 0) {
-			tank_obj.x = 0;
-		} else if (tank_obj.x > mapWidth - tankWidth) {
-			tank_obj.x = mapWidth - tankWidth;
+		if (tank_obj.x < mapBorderBuffer) {
+			tank_obj.x = mapBorderBuffer;
+		} else if (tank_obj.x > mapWidth - tankWidth - mapBorderBuffer) {
+			tank_obj.x = mapWidth - tankWidth - mapBorderBuffer;
 		}
-		if (tank_obj.y < 0) {
-			tank_obj.y = 0;
-		} else if (tank_obj.y > mapHeight - tankHeight) {
-			tank_obj.y = mapHeight - tankHeight;
+		if (tank_obj.y < mapBorderBuffer) {
+			tank_obj.y = mapBorderBuffer;
+		} else if (tank_obj.y > mapHeight - tankHeight - mapBorderBuffer) {
+			tank_obj.y = mapHeight - tankHeight - mapBorderBuffer;
 		}
 
 		// Set tank collision x and y
