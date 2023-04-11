@@ -167,9 +167,12 @@ for (let i = 0; i < numTrees; i++) {
 		});
 	}
 
+	// Assign the class a number between 1 and 2
+	const treeClass = Math.floor(Math.random() * 2) + 1;
+
 	const tree = new Sprite({
 		id: `tree_${i}`,
-		className: "tree",
+		className: `tree_${treeClass} tree`,
 		x: treeX - treeWidth,
 		y: treeY - treeHeight,
 		w: treeWidth,

@@ -151,9 +151,14 @@ body {
 	position: absolute;
 	width: 122px;
 	height: 254px;
-	background-image: url(images/tree_1.png);
 	background-repeat: no-repeat;
 	background-size: contain;
+}
+.tree_1 {
+	background-image: url(images/tree_1.png);
+}
+.tree_2 {
+	background-image: url(images/tree_2.png);
 }
 .base {
 	z-index: 1;
