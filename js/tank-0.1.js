@@ -1,9 +1,9 @@
 // Set the game parameters
 const numTanks = 2;
-const numTrees = 200;
+const numTrees = 100;
 
-const mapWidth = 1920;
-const mapHeight = 1280;
+const mapWidth = 910;
+const mapHeight = 882;
 const tankWidth = 50;
 const tankHeight = 50;
 const baseWidth = 400;
@@ -15,12 +15,14 @@ const treeTrunkWidth = 10;
 const treeTrunkHeight = 10;
 const treeTrunkXOffset = 58;
 const treeTrunkYOffset = 176;
+const treeTypes = 7;
 
 const baseSeparation = 400;
 const mapBorderBuffer = 0;
 
 // Define tank, base, and tree arrays
 const tanks = [];
+const tankGhosts = [];
 const bases = [];
 const trees = [];
 
@@ -76,26 +78,17 @@ class Sprite {
 	};
 }
 
-/* Angles are as follows:
- * 0   degrees (north)
- * 45  degrees (northeast)
- * 90  degrees (east)
- * 135 degrees (southeast)
- * 180 degrees (south)
- * 225 degrees (southwest)
- * 270 degrees (west)
- * 315 degrees (northwest)
- */
-
 // build the tanks and bases
 for (let i = 0; i < numTanks; i++) {
 	let baseX = 0;
 	let baseY = 0;
 
 	let baseCollision = true;
+	let attempts = 0;
 
 	// check for collisiions between bases and only set baseX and baseY if there is no collision
 	while (baseCollision) {
+		attempts++;
 		baseX = Math.floor(Math.random() * (mapWidth - baseWidth)); // subtract the base width to ensure it doesn't go outside the map
 		baseY = Math.floor(Math.random() * (mapHeight - baseHeight)); // subtract the base height to ensure it doesn't go outside the map
 		baseCollision = checkArrayCollision(bases, {
@@ -104,6 +97,11 @@ for (let i = 0; i < numTanks; i++) {
 			colW: baseWidth,
 			colH: baseHeight,
 		});
+
+		// if we've tried to place the base 50 times, just place it anyway
+		if (attempts > 50) {
+			break;
+		}
 	}
 
 	const base = new Sprite({
@@ -128,6 +126,7 @@ for (let i = 0; i < numTanks; i++) {
 	base.draw(document.getElementById("canvas_2"));
 	bases.push(base);
 
+	// Create the tank
 	const tank = new Sprite({
 		id: `tank_${i}`,
 		className: `tank_${i} tank rotate-135`,
@@ -148,6 +147,26 @@ for (let i = 0; i < numTanks; i++) {
 	tank.draw(document.getElementById("canvas_1"));
 	//tank.draw(document.getElementById("canvas_2"));
 	tanks.push(tank);
+
+	// Create the tank ghost
+	const tankGhost = new Sprite({
+		id: `tank_${i}_ghost`,
+		className: `tank_${i}_ghost tank_ghost rotate-135`,
+		x: baseX + baseWidth / 2 - tankWidth / 2,
+		y: baseY + baseHeight / 2 - tankHeight / 2,
+		w: tankWidth,
+		h: tankHeight,
+		colX: 0,
+		colY: 0,
+		colW: 0,
+		colH: 0,
+		speed: 0,
+		angle: 135,
+		tagged: false,
+		tagable: false,
+	});
+	tankGhost.draw(document.getElementById(`canvas_${i}`));
+	tankGhosts.push(tankGhost);
 }
 
 // Create the trees.
@@ -156,10 +175,12 @@ for (let i = 0; i < numTrees; i++) {
 	let treeY = 0;
 
 	let baseCollision = true;
+	let attempts = 0;
 
 	while (baseCollision) {
-		treeX = Math.floor(Math.random() * (mapWidth - treeTrunkWidth)); // subtract the base width to ensure it doesn't go outside the map
-		treeY = Math.floor(Math.random() * (mapHeight - treeTrunkHeight)); // subtract the base height to ensure it doesn't go outside the map
+		attempts++;
+		treeX = Math.floor(Math.random() * (mapWidth + treeWidth)); // subtract the base width to ensure it doesn't go outside the map
+		treeY = Math.floor(Math.random() * (mapHeight + treeHeight)); // subtract the base height to ensure it doesn't go outside the map
 
 		baseCollision = checkArrayCollision(bases, {
 			colX: treeX - treeWidth + treeTrunkXOffset,
@@ -167,10 +188,14 @@ for (let i = 0; i < numTrees; i++) {
 			colW: treeTrunkWidth,
 			colH: treeTrunkHeight,
 		});
+		// if we've tried to place the tree 10 times, just place it anyway
+		if (attempts > 10) {
+			break;
+		}
 	}
 
 	// Assign the class a number between 1 and 5.
-	const treeClass = Math.floor(Math.random() * 5) + 1;
+	const treeClass = Math.floor(Math.random() * treeTypes) + 1;
 
 	const tree = new Sprite({
 		id: `tree_${i}`,
@@ -253,9 +278,9 @@ function checkArrayCollision(array, obj) {
 	for (let i = 0; i < array.length; i++) {
 		if (array[i].id === obj.id) continue;
 		if (checkObjectCollision(array[i], obj)) {
-			// console.log(
-			// 	"collision detected: " + array[i].id + " and " + obj.id
-			// );
+			console.log(
+				"collision detected: " + array[i].id + " and " + obj.id
+			);
 			if (
 				array[i].className.includes("tank") &&
 				obj.className.includes("tank") &&
@@ -297,6 +322,7 @@ function checkObjectCollision(obj1, obj2) {
 
 // Move an object
 function move_tank(tank_obj) {
+	// Move the tank object
 	$("." + tank_obj.id).animate(
 		{
 			left: "" + tank_obj.x + "px",
@@ -304,6 +330,15 @@ function move_tank(tank_obj) {
 		},
 		1
 	);
+	// Move the corresponding tankGhost object
+	$("." + tank_obj.id + "_ghost").animate(
+		{
+			left: "" + tank_obj.x + "px",
+			top: "" + tank_obj.y + "px",
+		},
+		1
+	);
+
 	set_scroll(tank_obj.x, tank_obj.y, tank_obj.id);
 }
 
@@ -536,3 +571,11 @@ function start_game() {
 	play_status = true;
 	play_game();
 }
+
+window.addEventListener("resize", function (event) {
+	// for each tank in tanks[], run the set_scroll(tank_obj.x, tank_obj.y, tank_obj.id);
+	for (var i = 0; i < tanks.length; i++) {
+		console.log("resize tank " + i + "");
+		set_scroll(tanks[i].x, tanks[i].y, tanks[i].id);
+	}
+});

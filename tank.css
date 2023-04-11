@@ -39,11 +39,10 @@ body {
 	display: none;
 }
 .canvas {
-	width: 4800px;
-	height: 3000px;
 	background: transparent url(images/grass_832.jpg) repeat;
 	position: relative;
 	border: 20px dashed #990000cc;
+	overflow: hidden;
 }
 .tank {
 	display: block;
@@ -53,59 +52,49 @@ body {
 	background-repeat: no-repeat;
 	background-size: contain;
 }
-.tank.rotate-0 {
+.tank_ghost {
+	display: block;
+	position: absolute;
+	z-index: 101;
+	border: 3px dashed lime;
+	padding: 4px;
+}
+.rotate-0 {
 	transform: rotate(0deg);
 }
 
-.tank.rotate-45 {
+.rotate-45 {
 	transform: rotate(45deg);
 }
 
-.tank.rotate-90 {
+.rotate-90 {
 	transform: rotate(90deg);
 }
 
-.tank.rotate-135 {
+.rotate-135 {
 	transform: rotate(135deg);
 }
 
-.tank.rotate-180 {
+.rotate-180 {
 	transform: rotate(180deg);
 }
 
-.tank.rotate-225 {
+.rotate-225 {
 	transform: rotate(225deg);
 }
 
-.tank.rotate-270 {
+.rotate-270 {
 	transform: rotate(270deg);
 }
 
-.tank.rotate-315 {
+.rotate-315 {
 	transform: rotate(315deg);
 }
 
 .tagged {
 	background-image: url(images/tank_red.png);
 }
-#tank_0,
-#tank_1,
-#tank_2 {
-	top: 10px;
-	left: 10px;
-}
-#tank_10,
-#tank_11,
-#tank_12 {
-	top: 110px;
-	left: 210px;
-}
-#tank_20,
-#tank_21,
-#tank_22 {
-	top: 210px;
-	left: 310px;
-}
+
 #instructions {
 	position: absolute;
 	flex-direction: column;
@@ -170,6 +159,12 @@ body {
 .tree_5 {
 	background-image: url(images/tree_5.png);
 }
+.tree_6 {
+	background-image: url(images/tree_6.png);
+}
+.tree_7 {
+	background-image: url(images/tree_7.png);
+}
 .base {
 	z-index: 1;
 	position: absolute;
@@ -201,8 +196,10 @@ body {
 .paused {
 	display: block;
 	position: absolute;
+	top: 6vh;
+	right: 6vw;
 	font-family: "Poiret One", cursive;
-	font-size: 25vw;
+	font-size: 6vw;
 	color: #f00;
 	z-index: 100;
 	background-color: #000000bb;
