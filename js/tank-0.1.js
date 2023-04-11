@@ -39,7 +39,7 @@ const msec_rate = 20; // Game refresh rate, in milliseconds
 
 let do_check_move = false; // Track if we want to move an object
 let valid_key = false; // Track if a valid game key is pressed
-let play_status = true; // Track game mode, pause or play
+let play_status = false; // Track game mode, pause or play
 
 class Sprite {
 	constructor(props) {
@@ -266,8 +266,6 @@ function init() {
 	} else {
 		console.log("Browser is not in full-screen mode");
 	}
-	play_status ? stop_game() : start_game();
-	$(".paused").toggle();
 }
 
 // Set the tagged tank
