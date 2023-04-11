@@ -30,15 +30,16 @@ let trees = [];
 
 // Game timer
 let timer = 0;
-let tag_timer = 200;
+const timer_max = 800;
+let tag_timer = timer_max;
 
-const move_res_diag = 2; // Movement resolution in diagonal direction
-const move_res = 3; // Movement resolution in horizontal/vertical direction
-const msec_rate = 40; // Game refresh rate, in milliseconds
+const move_res_diag = 1.1; // Movement resolution in diagonal direction
+const move_res = 1.6; // Movement resolution in horizontal/vertical direction
+const msec_rate = 20; // Game refresh rate, in milliseconds
 
 let do_check_move = false; // Track if we want to move an object
 let valid_key = false; // Track if a valid game key is pressed
-let play_status = false; // Track game mode, pause or play
+let play_status = true; // Track game mode, pause or play
 
 class Sprite {
 	constructor(props) {
@@ -265,6 +266,8 @@ function init() {
 	} else {
 		console.log("Browser is not in full-screen mode");
 	}
+	play_status ? stop_game() : start_game();
+	$(".paused").toggle();
 }
 
 // Set the tagged tank
@@ -282,7 +285,7 @@ function set_tagged(tank_id) {
 		tanks[1].tagged = true;
 		$(".tank_1").addClass("tagged");
 	}
-	tag_timer = 200;
+	tag_timer = timer_max;
 }
 
 // Check for collisions between two objects
@@ -482,8 +485,8 @@ function set_stats(tank_obj) {
 	// 	`set_stats: ${tank_obj.id} ${tank_obj.x} ${tank_obj.y} ${tank_obj.angle}`
 	// );
 
-	$(`#${tank_obj.id}_x_pos`).html(`${tank_obj.x}`);
-	$(`#${tank_obj.id}_y_pos`).html(`${tank_obj.y}`);
+	$(`#${tank_obj.id}_x_pos`).html(`${Math.floor(tank_obj.x)}`);
+	$(`#${tank_obj.id}_y_pos`).html(`${Math.floor(tank_obj.y)}`);
 	$(`#${tank_obj.id}_angle`).html(`${tank_obj.angle}`);
 }
 
@@ -575,6 +578,9 @@ function play_game() {
 
 	$("#timer").html(timer);
 	$("#tag_timer").html(tag_timer);
+	// set global_tag_timer to 10% of tag_timer
+	$("#global_tag_timer").html(Math.floor(tag_timer / 50));
+
 	if (tag_timer > 0) {
 		tag_timer--;
 	}

@@ -189,9 +189,6 @@ body {
 #shell_1_b {
 	top: -999px;
 }
-#preload {
-	display: none;
-}
 .paused {
 	display: block;
 	position: absolute;
@@ -204,4 +201,19 @@ body {
 	background-color: #000000bb;
 	border-radius: 5vw;
 	padding: 4vw;
+}
+
+.global_tag_timer {
+	display: block;
+	position: absolute;
+	bottom: 2vh;
+	/* font family fixed width */
+	font-family: "Courier New", Courier, monospace;
+	font-size: 2vw;
+	color: rgb(255 255 255);
+	z-index: 100;
+	background-color: #000000bb;
+	border-radius: 1vw;
+	padding: 1vw;
+	width: 16vw;
 }
