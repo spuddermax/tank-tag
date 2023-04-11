@@ -1,0 +1,196 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+body {
+	background: #000;
+	color: #aaa;
+}
+#outer {
+	display: flex;
+	margin: 0 auto;
+	text-align: center;
+	padding: 0;
+	position: relative;
+	align-content: center;
+	justify-content: center;
+	align-items: center;
+}
+.container {
+	width: 50%;
+	height: 100vh;
+	background: transparent;
+	margin: 0px;
+	overflow: hidden;
+	border: 1;
+	padding: 0px;
+}
+#container_tank_0 {
+	float: left;
+	margin-right: 10px;
+}
+#container_tank_1 {
+	float: left;
+	margin-right: 10px;
+}
+#container_tank_2 {
+	float: left;
+	margin-right: 10px;
+	display: none;
+}
+.canvas {
+	width: 4800px;
+	height: 3000px;
+	background: transparent url(images/grass_832.jpg) repeat;
+	position: relative;
+}
+.tank {
+	display: block;
+	position: absolute;
+	z-index: 2;
+	background-image: url(images/tank_grey.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+.tank.rotate-0 {
+	transform: rotate(0deg);
+}
+
+.tank.rotate-45 {
+	transform: rotate(45deg);
+}
+
+.tank.rotate-90 {
+	transform: rotate(90deg);
+}
+
+.tank.rotate-135 {
+	transform: rotate(135deg);
+}
+
+.tank.rotate-180 {
+	transform: rotate(180deg);
+}
+
+.tank.rotate-225 {
+	transform: rotate(225deg);
+}
+
+.tank.rotate-270 {
+	transform: rotate(270deg);
+}
+
+.tank.rotate-315 {
+	transform: rotate(315deg);
+}
+
+.tagged {
+	background-image: url(images/tank_red.png);
+}
+#tank_0,
+#tank_1,
+#tank_2 {
+	top: 10px;
+	left: 10px;
+}
+#tank_10,
+#tank_11,
+#tank_12 {
+	top: 110px;
+	left: 210px;
+}
+#tank_20,
+#tank_21,
+#tank_22 {
+	top: 210px;
+	left: 310px;
+}
+#instructions {
+	position: absolute;
+	flex-direction: column;
+	justify-content: flex-start;
+	background-color: #0000005d;
+	border-radius: 0 0 40px 0;
+	top: 2px;
+	left: 2px;
+	height: 20px;
+	font-size: 8px;
+	font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+		"Lucida Sans", Arial, sans-serif;
+	padding: 10px;
+	z-index: 100;
+	overflow: hidden;
+}
+.tank-controls {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	width: 180px;
+	margin-top: 10px;
+}
+.tank-controls > div {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	flex-direction: column;
+	flex-wrap: nowrap;
+}
+.tank-controls > div > p {
+	text-align: left;
+}
+.stats-table {
+	float: left;
+	margin-left: 10px;
+	width: 1000px;
+	font-size: 10px;
+	margin-top: 20px;
+	width: 170px;
+}
+.tree {
+	z-index: 5;
+	position: absolute;
+	width: 122px;
+	height: 254px;
+	background-image: url(images/tree_1.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+.base {
+	z-index: 1;
+	position: absolute;
+	width: 400px;
+	height: 400px;
+	background-image: url(images/base.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.shell {
+	z-index: 10;
+	position: absolute;
+	width: 6px;
+	height: 6px;
+}
+.shadow {
+	opacity: 0.4;
+}
+#shell_1_a {
+	top: -999px;
+}
+#shell_1_b {
+	top: -999px;
+}
+#preload {
+	display: none;
+}
+.paused {
+	display: block;
+	position: absolute;
+	font-family: "Poiret One", cursive;
+	font-size: 25vw;
+	color: #f00;
+	z-index: 100;
+	background-color: #000000bb;
+	border-radius: 5vw;
+	padding: 4vw;
+}

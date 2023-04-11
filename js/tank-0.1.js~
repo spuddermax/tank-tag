@@ -1,0 +1,436 @@
+
+// The main object class
+function Tank(id,x,y,speed,angle,w,h)
+{
+	this.id = id; // The tank ID
+	this.x = x; // x coord
+	this.y = y; // y coord
+	this.speed = speed; // Speed (-1=reverse, 0=stopped, 1=forward)
+	this.angle = angle; // Direction in degrees (0, 45, 90, 135, 215, 225, 270, 315)
+	this.w = w; // Width of the tank
+	this.h = h; // Height of the tank
+};
+
+/* Angles are as follows:
+ * 0   degrees (north)
+ * 45  degrees (northeast)
+ * 90  degrees (east)
+ * 135 degrees (southeast)
+ * 180 degrees (south)
+ * 225 degrees (southwest)
+ * 270 degrees (west)
+ * 315 degrees (northwest)
+ */
+
+// Tanks
+var tank_1 = new Tank('0',10,10,0,90,72,72);
+var tank_2 = new Tank('10',210,110,0,270,72,72);
+var tank_3 = new Tank('20',410,210,0,270,72,72);
+
+// Tree trunks
+var tree_1 = new Tank('3',200,390,0,0,20,20);
+var tree_2 = new Tank('4',300,490,0,0,20,20);
+var tree_3 = new Tank('5',400,590,0,0,20,20);
+
+// Game timer
+var timer = 0;
+
+// Initialize tank stats	
+set_stats(tank_1);
+set_stats(tank_2);
+set_stats(tank_2);
+
+var move_res_diag = 1; // Movement resolution in diagonal direction
+var move_res = 1.5; // Movement resolution in horizontal/vertical direction
+var msec_rate = 40; // Game refresh rate, in milliseconds
+
+var do_check_move = false; // Track if we want to move an object
+var valid_key = false; // Track if a valid game key is pressed
+var play_status = false; // Track game mode, pause or play
+
+// Initialize the game
+function init()
+{
+	document.onkeydown = keyListener;
+	play_status = false;
+	set_scroll(tank_1.x,tank_1.y,tank_1.id);
+	set_scroll(tank_2.x,tank_2.y,tank_2.id);
+	set_scroll(tank_3.x,tank_3.y,tank_3.id);
+}
+
+// Move an object
+function move_tank(tank_obj)
+{
+	$('#tank_'+tank_obj.id).animate({
+		left: ""+tank_obj.x+"px",
+		top: ""+tank_obj.y+"px"
+	}, 1);
+	$('#tank_'+ (parseInt(tank_obj.id)+1)).animate({
+		left: ""+tank_obj.x+"px",
+		top: ""+tank_obj.y+"px"
+	}, 1);
+	$('#tank_'+ (parseInt(tank_obj.id)+2)).animate({
+		left: ""+tank_obj.x+"px",
+		top: ""+tank_obj.y+"px"
+	}, 1);
+
+	//if(tank_obj.id == 1)
+	//{
+		set_scroll(tank_obj.x,tank_obj.y,tank_obj.id);
+	//}
+	//else
+	//{
+	//	set_scroll(tank_obj.x,tank_obj.y,2);
+	//}
+};
+
+// Scroll the map
+function set_scroll(pos_left,pos_top,view_id)
+{
+	var new_left = pos_left - 214;
+	var new_top = pos_top - 214;
+	
+	if(new_left < 0)
+	{
+		new_left = 0;
+	}
+	if(new_top < 0)
+	{
+		new_top = 0;
+	}
+
+	$('#container_'+view_id).scrollLeft(new_left).scrollTop(new_top);
+}
+
+// Check for collisions between 2 objects
+function check_collision(obj_1, obj_2)
+{
+	var off_x = 6;
+	var off_y = 6;
+
+	if(
+		(obj_1.y + obj_1.h - (off_y) < obj_2.y + off_y) ||
+		(obj_1.y + off_y > obj_2.y + obj_2.h - (off_y * 2)) ||
+		(obj_1.x + obj_1.w - (off_x * 2) < obj_2.x + off_x) ||
+		(obj_1.x + off_x > obj_2.x + obj_2.w - (off_x * 2)) )
+	{
+		return false;
+	}
+	return true;
+}
+
+// See if an object needs to move
+function check_move(tank_obj, tank2_obj, tank3_obj, tree1_obj, tree2_obj, tree3_obj)
+{
+	var curr_x = tank_obj.x;
+	var curr_y = tank_obj.y;
+
+	if(tank_obj.speed != 0) // Move the tank
+	{
+		if( tank_obj.speed == 1 ) // forward
+		{
+			if( tank_obj.angle == 0 ) // North
+			{
+				tank_obj.y -= move_res*2;
+			}
+			else if( tank_obj.angle == 45 ) // Northeast
+			{
+				tank_obj.y -= move_res_diag*2;
+				tank_obj.x += move_res_diag*2;
+			}
+			else if( tank_obj.angle == 90 ) // East
+			{
+				tank_obj.x += move_res*2;
+			}
+			else if( tank_obj.angle == 135 ) // Southeast
+			{
+				tank_obj.x += move_res_diag*2;
+				tank_obj.y += move_res_diag*2;
+			}
+			else if( tank_obj.angle == 180 ) // South
+			{
+				tank_obj.y += move_res*2;
+			}
+			else if( tank_obj.angle == 225 ) // Southwest
+			{
+				tank_obj.x -= move_res_diag*2;
+				tank_obj.y += move_res_diag*2;
+			}
+			else if( tank_obj.angle == 270 ) // West
+			{
+				tank_obj.x -= move_res*2;
+			}
+			else if( tank_obj.angle == 315 ) // Northwest
+			{
+				tank_obj.x -= move_res_diag*2;
+				tank_obj.y -= move_res_diag*2;
+			}
+		}
+		else if( tank_obj.speed == -1 ) // backward
+		{
+			if( tank_obj.angle == 0 ) // South
+			{
+				tank_obj.y += move_res;
+			}
+			else if( tank_obj.angle == 45 ) // Southwest
+			{
+				tank_obj.y += move_res_diag;
+				tank_obj.x -= move_res_diag;
+			}
+			else if( tank_obj.angle == 90 ) // West
+			{
+				tank_obj.x -= move_res;
+			}
+			else if( tank_obj.angle == 135 ) // Northwest
+			{
+				tank_obj.x -= move_res_diag;
+				tank_obj.y -= move_res_diag;
+			}
+			else if( tank_obj.angle == 180 ) // North
+			{
+				tank_obj.y -= move_res;
+			}
+			else if( tank_obj.angle == 225 ) // Northeast
+			{
+				tank_obj.x += move_res_diag;
+				tank_obj.y -= move_res_diag;
+			}
+			else if( tank_obj.angle == 270 ) // East
+			{
+				tank_obj.x += move_res;
+			}
+			else if( tank_obj.angle == 315 ) // Southeast
+			{
+				tank_obj.x += move_res_diag;
+				tank_obj.y += move_res_diag;
+			}
+		}
+
+		// Check for canvas boundary collision
+		if(tank_obj.x < -11)
+		{
+			tank_obj.x = -11;
+		}
+		else if(tank_obj.x > 2400-61)
+		{
+			tank_obj.x = 2400-61;
+		}
+		if(tank_obj.y < -11)
+		{
+			tank_obj.y = -11;
+		}
+		else if(tank_obj.y > 1500-61)
+		{
+			tank_obj.y = 1500-61;
+		}
+		
+		// Check object against all others for collisions
+		if( check_collision(tank_obj, tank2_obj) ||
+			check_collision(tank_obj, tank3_obj) ||
+			check_collision(tank_obj, tree1_obj) ||
+			check_collision(tank_obj, tree2_obj) ||
+			check_collision(tank_obj, tree3_obj)
+		)
+		{
+			tank_obj.x = curr_x;
+			tank_obj.y = curr_y;
+		}
+		else
+		{
+			move_tank(tank_obj);
+			set_stats(tank_obj);
+		}
+	}
+}
+
+// Set the debugging stats
+function set_stats(tank_obj)
+{
+	$('#x'+tank_obj.id+'_pos').html(''+tank_obj.x+'');
+	$('#y'+tank_obj.id+'_pos').html(''+tank_obj.y+'');
+	$('#a'+tank_obj.id+'_angle').html(''+tank_obj.angle+'');
+}
+
+// Check for keyboard input
+function keyListener(e)
+{
+	//alert(e.keyCode);
+	//for IE
+	if(!e)
+	{
+		e = window.event;
+	}
+	switch(e.keyCode)
+	{
+		case 32: // Pause/Play
+			if(play_status)
+			{
+				stop_game();
+			}
+			else
+			{
+				start_game();
+			}
+		break;
+
+		case 38: // Tank 1 forward
+			tank_1.speed++;
+			if(tank_1.speed > 1)
+			{
+				tank_1.speed = 1;
+			}
+			valid_key = true;
+		break;
+		case 40: // backward 1
+			tank_1.speed--;
+			if(tank_1.speed < -1)
+			{
+				tank_1.speed = -1;
+			}
+			valid_key = true;
+		break;
+		case 39: // Turn right 1
+			tank_1.angle+=45;
+			if(tank_1.angle > 315)
+			{
+				tank_1.angle = 0;
+			}
+			$('#tank_0').attr('src','images/tank_2_' + tank_1.angle +'.png');
+			$('#tank_1').attr('src','images/tank_2_' + tank_1.angle +'.png');
+			$('#tank_2').attr('src','images/tank_2_' + tank_1.angle +'.png');
+			set_stats(false,false,tank_1.angle,'1');
+			valid_key = true;
+		break;
+		case 37: // Turn left 1
+			tank_1.angle-=45;
+			if(tank_1.angle < 0)
+			{
+				tank_1.angle = 315;
+			}
+			$('#tank_0').attr('src','images/tank_2_' + tank_1.angle +'.png');
+			$('#tank_1').attr('src','images/tank_2_' + tank_1.angle +'.png');
+			$('#tank_2').attr('src','images/tank_2_' + tank_1.angle +'.png');
+			set_stats(false,false,tank_1.angle,'1');
+			valid_key = true;
+		break;
+		
+		case 87: // Tank 2 forward
+			tank_2.speed++;
+			if(tank_2.speed > 1)
+			{
+				tank_2.speed = 1;
+			}
+			valid_key = true;
+		break;
+		case 83: // backward 2
+			tank_2.speed--;
+			if(tank_2.speed < -1)
+			{
+				tank_2.speed = -1;
+			}
+			valid_key = true;
+		break;
+		case 68: // Turn right 2
+			tank_2.angle+=45;
+			if(tank_2.angle > 315)
+			{
+				tank_2.angle = 0;
+			}
+			$('#tank_10').attr('src','images/tank_2_' + tank_2.angle +'.png');
+			$('#tank_11').attr('src','images/tank_2_' + tank_2.angle +'.png');
+			$('#tank_12').attr('src','images/tank_2_' + tank_2.angle +'.png');
+			set_stats(false,false,tank_2.angle,'2');
+			valid_key = true;
+		break;
+		case 65: // Turn left 2
+			tank_2.angle-=45;
+			if(tank_2.angle < 0)
+			{
+				tank_2.angle = 315;
+			}
+			$('#tank_10').attr('src','images/tank_2_' + tank_2.angle +'.png');
+			$('#tank_11').attr('src','images/tank_2_' + tank_2.angle +'.png');
+			$('#tank_12').attr('src','images/tank_2_' + tank_2.angle +'.png');
+			set_stats(false,false,tank_2.angle,'2');
+			valid_key = true;
+		break;
+
+		case 72: // Tank 3 forward
+			tank_3.speed++;
+			if(tank_3.speed > 1)
+			{
+				tank_3.speed = 1;
+			}
+			valid_key = true;
+		break;
+		case 78: // backward 3
+			tank_3.speed--;
+			if(tank_3.speed < -1)
+			{
+				tank_3.speed = -1;
+			}
+			valid_key = true;
+		break;
+		case 77: // Turn right 3
+			tank_3.angle+=45;
+			if(tank_3.angle > 315)
+			{
+				tank_3.angle = 0;
+			}
+			$('#tank_20').attr('src','images/tank_2_' + tank_3.angle +'.png');
+			$('#tank_21').attr('src','images/tank_2_' + tank_3.angle +'.png');
+			$('#tank_22').attr('src','images/tank_2_' + tank_3.angle +'.png');
+			set_stats(false,false,tank_3.angle,'3');
+			valid_key = true;
+		break;
+		case 66: // Turn left 3
+			tank_3.angle-=45;
+			if(tank_3.angle < 0)
+			{
+				tank_3.angle = 315;
+			}
+			$('#tank_20').attr('src','images/tank_2_' + tank_3.angle +'.png');
+			$('#tank_21').attr('src','images/tank_2_' + tank_3.angle +'.png');
+			$('#tank_22').attr('src','images/tank_2_' + tank_3.angle +'.png');
+			set_stats(false,false,tank_3.angle,'3');
+			valid_key = true;
+		break;
+		
+		default:
+			valid_key = false;
+		break;
+	}
+	if(valid_key)
+	{
+		return false; // Prevent normal keyboard input action
+	}
+}
+
+// Loop the game
+function play_game()
+{
+	check_move(tank_1, tank_2, tank_3, tree_1, tree_2, tree_3);
+	check_move(tank_2, tank_1, tank_3, tree_1, tree_2, tree_3);
+	check_move(tank_3, tank_1, tank_2, tree_1, tree_2, tree_3);
+	$('#timer').html(timer);
+	
+	if(play_status)
+	{
+		// Loop again
+		timer = setTimeout('play_game()',msec_rate);
+	}
+}
+
+// Pause the game
+function stop_game()
+{
+	play_status = false;
+}
+
+// Start the game
+function start_game()
+{
+	play_status = true;
+	play_game();
+}
+

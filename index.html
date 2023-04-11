@@ -1,0 +1,118 @@
+<html>
+	<head>
+		<title>Tank Tag</title>
+
+		<link rel="stylesheet" type="text/css" href="tank.css" />
+
+		<script
+			language="javascript"
+			type="text/javascript"
+			src="js/jquery-1.3.2.js"></script>
+	</head>
+	<body onLoad="init()">
+		<div id="outer">
+			<div id="paused_1" class="paused">Paused</div>
+			<div id="container_tank_0" class="container">
+				<div id="canvas_0" class="canvas"></div>
+			</div>
+
+			<div id="container_tank_1" class="container">
+				<div id="canvas_1" class="canvas"></div>
+			</div>
+
+			<!-- <div id="container_tank_2" class="container">
+				<div id="canvas_2" class="canvas"></div>
+			</div> -->
+
+			<div id="instructions">
+				<p>
+					Press spacebar to toggle play/pause.<br />
+					Press 'I' to toggle instructions.
+				</p>
+				<div class="tank-controls">
+					<div>
+						<h4>Tank 1</h4>
+						<p>Forward: ▲</p>
+						<p>Back: ▼</p>
+						<p>Left: ◄</p>
+						<p>Right: ►</p>
+					</div>
+					<div>
+						<h4>Tank 2</h4>
+						<p>Forward: W</p>
+						<p>Back: S</p>
+						<p>Left: A</p>
+						<p>Right: D</p>
+					</div>
+					<div>
+						<h4>Tank 3</h4>
+						<p>Forward: H</p>
+						<p>Back: N</p>
+						<p>Left: B</p>
+						<p>Right: M</p>
+					</div>
+				</div>
+				<table class="stats-table">
+					<tr>
+						<td>Tank1</td>
+						<td>Tank2</td>
+						<td>Tank3</td>
+					</tr>
+					<tr>
+						<td>X1: <span id="tank_0_x_pos">xInt</span></td>
+						<td>X2: <span id="tank_1_x_pos">xInt</span></td>
+						<td>X3: <span id="tank_2_x_pos">xInt</span></td>
+					</tr>
+					<tr>
+						<td>Y1: <span id="tank_0_y_pos"></span></td>
+						<td>Y2: <span id="tank_1_y_pos"></span></td>
+						<td>Y3: <span id="tank_2_y_pos"></span></td>
+					</tr>
+					<tr>
+						<td>A1: <span id="tank_0_angle"></span></td>
+						<td>A2: <span id="tank_1_angle"></span></td>
+						<td>A3: <span id="tank_2_angle"></span></td>
+					</tr>
+					<tr>
+						<td colspan="3">&nbsp;</td>
+					</tr>
+					<tr>
+						<td colspan="3">Timer: <span id="timer"></span></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							Tag Timer: <span id="tag_timer"></span>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<div id="preload">
+			<img src="images/tank_1_0.png" />
+			<img src="images/tank_1_45.png" />
+			<img src="images/tank_1_90.png" />
+			<img src="images/tank_1_135.png" />
+			<img src="images/tank_1_180.png" />
+			<img src="images/tank_1_225.png" />
+			<img src="images/tank_1_270.png" />
+			<img src="images/tank_1_315.png" />
+
+			<img src="images/tank_2_0.png" />
+			<img src="images/tank_2_45.png" />
+			<img src="images/tank_2_90.png" />
+			<img src="images/tank_2_135.png" />
+			<img src="images/tank_2_180.png" />
+			<img src="images/tank_2_225.png" />
+			<img src="images/tank_2_270.png" />
+			<img src="images/tank_2_315.png" />
+
+			<img src="images/tree_1.png" />
+			<img src="images/tree_shadow_1.gif" />
+		</div>
+	</body>
+	<script
+		language="javascript"
+		type="text/javascript"
+		src="js/tank-0.1.js"></script>
+</html>
