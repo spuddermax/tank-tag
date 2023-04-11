@@ -8,6 +8,7 @@ const tankWidth = 50;
 const tankHeight = 50;
 const baseWidth = 400;
 const baseHeight = 400;
+const ghostWidth = 3;
 
 const treeWidth = 172;
 const treeHeight = 335;
@@ -152,10 +153,10 @@ for (let i = 0; i < numTanks; i++) {
 	const tankGhost = new Sprite({
 		id: `tank_${i}_ghost`,
 		className: `tank_${i}_ghost tank_ghost rotate-135`,
-		x: baseX + baseWidth / 2 - tankWidth / 2,
-		y: baseY + baseHeight / 2 - tankHeight / 2,
-		w: tankWidth,
-		h: tankHeight,
+		x: baseX + baseWidth / 2 - tankWidth / 2 - ghostWidth / 2,
+		y: baseY + baseHeight / 2 - tankHeight / 2 - ghostWidth / 2,
+		w: tankWidth + ghostWidth * 2,
+		h: tankHeight + ghostWidth * 2,
 		colX: 0,
 		colY: 0,
 		colW: 0,
@@ -235,6 +236,9 @@ function init() {
 
 	$(".tank, .tank_ghost").css("width", tankWidth);
 	$(".tank, .tank_ghost").css("height", tankHeight);
+
+	// Set the ghost border width css
+	$(".tank_ghost").css("border-width", ghostWidth);
 
 	var rand = Math.floor(Math.random() * 2);
 	set_tagged("tank_" + rand);
@@ -333,8 +337,8 @@ function move_tank(tank_obj) {
 	// Move the corresponding tankGhost object
 	$("." + tank_obj.id + "_ghost").animate(
 		{
-			left: "" + tank_obj.x + "px",
-			top: "" + tank_obj.y + "px",
+			left: "" + tank_obj.x - ghostWidth / 2 + "px",
+			top: "" + tank_obj.y - ghostWidth / 2 + "px",
 		},
 		1
 	);
