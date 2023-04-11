@@ -20,7 +20,6 @@ const treeTrunkYOffset = 176;
 const treeTypes = 7;
 
 const baseSeparation = 400;
-const mapBorderBuffer = 0;
 
 // Define tank, base, and tree arrays
 let tanks = [];
@@ -449,15 +448,15 @@ function check_move(tank_obj, tank2_obj) {
 		}
 
 		// Check for canvas boundary collision
-		if (tank_obj.x < mapBorderBuffer) {
-			tank_obj.x = mapBorderBuffer;
-		} else if (tank_obj.x > mapWidth - tankWidth - mapBorderBuffer) {
-			tank_obj.x = mapWidth - tankWidth - mapBorderBuffer;
+		if (tank_obj.x < 0) {
+			tank_obj.x = 0;
+		} else if (tank_obj.x > mapWidth - tankWidth - mapBorder * 2) {
+			tank_obj.x = mapWidth - tankWidth - mapBorder * 2;
 		}
-		if (tank_obj.y < mapBorderBuffer) {
-			tank_obj.y = mapBorderBuffer;
-		} else if (tank_obj.y > mapHeight - tankHeight - mapBorderBuffer) {
-			tank_obj.y = mapHeight - tankHeight - mapBorderBuffer;
+		if (tank_obj.y < 0) {
+			tank_obj.y = 0;
+		} else if (tank_obj.y > mapHeight - tankHeight - mapBorder * 2) {
+			tank_obj.y = mapHeight - tankHeight - mapBorder * 2;
 		}
 
 		// Set tank collision x and y
