@@ -29,7 +29,7 @@ let trees = [];
 
 // Game timer
 let timer = 0;
-const timer_max = 750;
+const timer_max = 250;
 let tag_timer = timer_max;
 
 const move_res_diag = 1.1; // Movement resolution in diagonal direction
@@ -282,7 +282,9 @@ function set_tagged(tank_id) {
 		tanks[1].tagged = true;
 		$(".tank_1").addClass("tagged");
 	}
-	send_to_base(tank_id);
+	if (play_status) {
+		send_to_base(tank_id);
+	}
 	tag_timer = timer_max;
 	$(".global_tag_timer").fadeIn(500);
 }
@@ -294,20 +296,30 @@ function send_to_base(tank_id) {
 		tanks[0].y = bases[0].y + baseHeight / 2 - tankHeight / 2;
 		tanks[0].colX = bases[0].x + baseWidth / 2 - tankWidth / 2;
 		tanks[0].colY = bases[0].y + baseHeight / 2 - tankHeight / 2;
-
 		tanks[0].speed = 0;
-		$(".tank_0").css("opacity", 0);
+
+		// Set the container_tank_1 to 0 opacity
+		$("#tank_0").css("opacity", 0);
+		$("#container_tank_0").css("opacity", 0);
+
 		move_tank(tanks[0]);
-		$(".tank_0").animate({ opacity: 1 }, 1000);
+
+		$("#tank_0").animate({ opacity: 1 }, 4000);
+		$("#container_tank_0").animate({ opacity: 1 }, 2000);
 	} else if (tanks[1].id == tank_id) {
 		tanks[1].x = bases[1].x + baseWidth / 2 - tankWidth / 2;
 		tanks[1].y = bases[1].y + baseHeight / 2 - tankHeight / 2;
 		tanks[1].colX = bases[1].x + baseWidth / 2 - tankWidth / 2;
 		tanks[1].colY = bases[1].y + baseHeight / 2 - tankHeight / 2;
 		tanks[1].speed = 0;
-		$(".tank_1").css("opacity", 0);
+
+		$("#tank_1").css("opacity", 0);
+		$("#container_tank_1").css("opacity", 0);
+
 		move_tank(tanks[1]);
-		$(".tank_1").animate({ opacity: 1 }, 1000);
+
+		$("#tank_1").animate({ opacity: 1 }, 4000);
+		$("#container_tank_1").animate({ opacity: 1 }, 2000);
 	}
 }
 
@@ -402,7 +414,10 @@ function set_scroll(pos_left, pos_top, view_id) {
 }
 
 // See if an object needs to move
-function check_move(tank_obj, tank2_obj) {
+function check_move(tank_obj) {
+	// If tag_timer is greater than zero and the tank is tagged, return
+	if (tag_timer > 0 && tank_obj.tagged) return;
+
 	var curr_x = tank_obj.x;
 	var curr_y = tank_obj.y;
 
