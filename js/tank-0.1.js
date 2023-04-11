@@ -2,8 +2,9 @@
 const numTanks = 2;
 const numTrees = 100;
 
-const mapWidth = 910;
-const mapHeight = 882;
+const mapWidth = 1920;
+const mapHeight = 1080;
+const mapBorder = 20;
 const tankWidth = 50;
 const tankHeight = 50;
 const baseWidth = 400;
@@ -22,10 +23,10 @@ const baseSeparation = 400;
 const mapBorderBuffer = 0;
 
 // Define tank, base, and tree arrays
-const tanks = [];
-const tankGhosts = [];
-const bases = [];
-const trees = [];
+let tanks = [];
+let tankGhosts = [];
+let bases = [];
+let trees = [];
 
 // Game timer
 let timer = 0;
@@ -79,166 +80,177 @@ class Sprite {
 	};
 }
 
-// build the tanks and bases
-for (let i = 0; i < numTanks; i++) {
-	let baseX = 0;
-	let baseY = 0;
+function buildAssets() {
+	// clear the arrays
+	tanks = [];
+	tankGhosts = [];
+	bases = [];
+	trees = [];
 
-	let baseCollision = true;
-	let attempts = 0;
+	// build the tanks and bases
+	for (let i = 0; i < numTanks; i++) {
+		let baseX = 0;
+		let baseY = 0;
 
-	// check for collisiions between bases and only set baseX and baseY if there is no collision
-	while (baseCollision) {
-		attempts++;
-		baseX = Math.floor(Math.random() * (mapWidth - baseWidth)); // subtract the base width to ensure it doesn't go outside the map
-		baseY = Math.floor(Math.random() * (mapHeight - baseHeight)); // subtract the base height to ensure it doesn't go outside the map
-		baseCollision = checkArrayCollision(bases, {
+		let baseCollision = true;
+		let attempts = 0;
+
+		// check for collisiions between bases and only set baseX and baseY if there is no collision
+		while (baseCollision) {
+			attempts++;
+			baseX = Math.floor(Math.random() * (mapWidth - baseWidth)); // subtract the base width to ensure it doesn't go outside the map
+			baseY = Math.floor(Math.random() * (mapHeight - baseHeight)); // subtract the base height to ensure it doesn't go outside the map
+			baseCollision = checkArrayCollision(bases, {
+				colX: baseX,
+				colY: baseY,
+				colW: baseWidth,
+				colH: baseHeight,
+			});
+
+			// if we've tried to place the base 50 times, just place it anyway
+			if (attempts > 50) {
+				break;
+			}
+		}
+
+		const base = new Sprite({
+			id: `base_${i}`,
+			className: "base",
+			x: baseX,
+			y: baseY,
+			w: baseWidth,
+			h: baseHeight,
 			colX: baseX,
 			colY: baseY,
 			colW: baseWidth,
 			colH: baseHeight,
+			speed: 0,
+			angle: 0,
+			tagged: false,
+			tagable: false,
 		});
 
-		// if we've tried to place the base 50 times, just place it anyway
-		if (attempts > 50) {
-			break;
-		}
+		base.draw(document.getElementById("canvas_0"));
+		base.draw(document.getElementById("canvas_1"));
+		base.draw(document.getElementById("canvas_2"));
+		bases.push(base);
+
+		// Create the tank
+		const tank = new Sprite({
+			id: `tank_${i}`,
+			className: `tank_${i} tank rotate-135`,
+			x: baseX + baseWidth / 2 - tankWidth / 2,
+			y: baseY + baseHeight / 2 - tankHeight / 2,
+			w: tankWidth,
+			h: tankHeight,
+			colX: baseX + baseWidth / 2 - tankWidth / 2,
+			colY: baseY + baseHeight / 2 - tankHeight / 2,
+			colW: tankWidth,
+			colH: tankHeight,
+			speed: 0,
+			angle: 135,
+			tagged: false,
+			tagable: true,
+		});
+		tank.draw(document.getElementById("canvas_0"));
+		tank.draw(document.getElementById("canvas_1"));
+		//tank.draw(document.getElementById("canvas_2"));
+		tanks.push(tank);
+
+		// Create the tank ghost
+		const tankGhost = new Sprite({
+			id: `tank_${i}_ghost`,
+			className: `tank_${i}_ghost tank_ghost rotate-135`,
+			x: baseX + baseWidth / 2 - tankWidth / 2 - ghostWidth / 2,
+			y: baseY + baseHeight / 2 - tankHeight / 2 - ghostWidth / 2,
+			w: tankWidth + ghostWidth * 2,
+			h: tankHeight + ghostWidth * 2,
+			colX: 0,
+			colY: 0,
+			colW: 0,
+			colH: 0,
+			speed: 0,
+			angle: 135,
+			tagged: false,
+			tagable: false,
+		});
+		tankGhost.draw(document.getElementById(`canvas_${i}`));
+		tankGhosts.push(tankGhost);
 	}
 
-	const base = new Sprite({
-		id: `base_${i}`,
-		className: "base",
-		x: baseX,
-		y: baseY,
-		w: baseWidth,
-		h: baseHeight,
-		colX: baseX,
-		colY: baseY,
-		colW: baseWidth,
-		colH: baseHeight,
-		speed: 0,
-		angle: 0,
-		tagged: false,
-		tagable: false,
-	});
+	// Create the trees.
+	for (let i = 0; i < numTrees; i++) {
+		let treeX = 0;
+		let treeY = 0;
 
-	base.draw(document.getElementById("canvas_0"));
-	base.draw(document.getElementById("canvas_1"));
-	base.draw(document.getElementById("canvas_2"));
-	bases.push(base);
+		let baseCollision = true;
+		let attempts = 0;
 
-	// Create the tank
-	const tank = new Sprite({
-		id: `tank_${i}`,
-		className: `tank_${i} tank rotate-135`,
-		x: baseX + baseWidth / 2 - tankWidth / 2,
-		y: baseY + baseHeight / 2 - tankHeight / 2,
-		w: tankWidth,
-		h: tankHeight,
-		colX: baseX + baseWidth / 2 - tankWidth / 2,
-		colY: baseY + baseHeight / 2 - tankHeight / 2,
-		colW: tankWidth,
-		colH: tankHeight,
-		speed: 0,
-		angle: 135,
-		tagged: false,
-		tagable: true,
-	});
-	tank.draw(document.getElementById("canvas_0"));
-	tank.draw(document.getElementById("canvas_1"));
-	//tank.draw(document.getElementById("canvas_2"));
-	tanks.push(tank);
+		while (baseCollision) {
+			attempts++;
+			treeX = Math.floor(Math.random() * (mapWidth + treeWidth)); // subtract the base width to ensure it doesn't go outside the map
+			treeY = Math.floor(Math.random() * (mapHeight + treeHeight)); // subtract the base height to ensure it doesn't go outside the map
 
-	// Create the tank ghost
-	const tankGhost = new Sprite({
-		id: `tank_${i}_ghost`,
-		className: `tank_${i}_ghost tank_ghost rotate-135`,
-		x: baseX + baseWidth / 2 - tankWidth / 2 - ghostWidth / 2,
-		y: baseY + baseHeight / 2 - tankHeight / 2 - ghostWidth / 2,
-		w: tankWidth + ghostWidth * 2,
-		h: tankHeight + ghostWidth * 2,
-		colX: 0,
-		colY: 0,
-		colW: 0,
-		colH: 0,
-		speed: 0,
-		angle: 135,
-		tagged: false,
-		tagable: false,
-	});
-	tankGhost.draw(document.getElementById(`canvas_${i}`));
-	tankGhosts.push(tankGhost);
-}
+			baseCollision = checkArrayCollision(bases, {
+				colX: treeX - treeWidth + treeTrunkXOffset,
+				colY: treeY - treeHeight + treeTrunkYOffset,
+				colW: treeTrunkWidth,
+				colH: treeTrunkHeight,
+			});
+			// if we've tried to place the tree 10 times, just place it anyway
+			if (attempts > 10) {
+				break;
+			}
+		}
 
-// Create the trees.
-for (let i = 0; i < numTrees; i++) {
-	let treeX = 0;
-	let treeY = 0;
+		// Assign the class a number between 1 and 5.
+		const treeClass = Math.floor(Math.random() * treeTypes) + 1;
 
-	let baseCollision = true;
-	let attempts = 0;
-
-	while (baseCollision) {
-		attempts++;
-		treeX = Math.floor(Math.random() * (mapWidth + treeWidth)); // subtract the base width to ensure it doesn't go outside the map
-		treeY = Math.floor(Math.random() * (mapHeight + treeHeight)); // subtract the base height to ensure it doesn't go outside the map
-
-		baseCollision = checkArrayCollision(bases, {
+		const tree = new Sprite({
+			id: `tree_${i}`,
+			className: `tree_${treeClass} tree`,
+			x: treeX - treeWidth,
+			y: treeY - treeHeight,
+			w: treeWidth,
+			h: treeHeight,
 			colX: treeX - treeWidth + treeTrunkXOffset,
 			colY: treeY - treeHeight + treeTrunkYOffset,
 			colW: treeTrunkWidth,
 			colH: treeTrunkHeight,
+			speed: 0,
+			angle: 0,
+			tagged: false,
+			tagable: false,
 		});
-		// if we've tried to place the tree 10 times, just place it anyway
-		if (attempts > 10) {
-			break;
-		}
+		tree.draw(document.getElementById("canvas_0"));
+		tree.draw(document.getElementById("canvas_1"));
+		//tree.draw(document.getElementById("canvas_2"));
+		trees.push(tree);
 	}
-
-	// Assign the class a number between 1 and 5.
-	const treeClass = Math.floor(Math.random() * treeTypes) + 1;
-
-	const tree = new Sprite({
-		id: `tree_${i}`,
-		className: `tree_${treeClass} tree`,
-		x: treeX - treeWidth,
-		y: treeY - treeHeight,
-		w: treeWidth,
-		h: treeHeight,
-		colX: treeX - treeWidth + treeTrunkXOffset,
-		colY: treeY - treeHeight + treeTrunkYOffset,
-		colW: treeTrunkWidth,
-		colH: treeTrunkHeight,
-		speed: 0,
-		angle: 0,
-		tagged: false,
-		tagable: false,
-	});
-	tree.draw(document.getElementById("canvas_0"));
-	tree.draw(document.getElementById("canvas_1"));
-	//tree.draw(document.getElementById("canvas_2"));
-	trees.push(tree);
 }
-
 // Base walls
 //var base_1_wall_1 = new Tank('50',365,0,0,0,35,275,true);
 //var base_1_wall_2 = new Tank('51',0,365,0,0,275,35,true);
 
-// Initialize tank stats
-set_stats(tanks[0]);
-set_stats(tanks[1]);
-//set_stats(tanks[2]);
-
 // Initialize the game
 function init() {
-	$(".canvas").css("width", mapWidth);
-	$(".canvas").css("height", mapHeight);
+	buildAssets();
+
+	// Initialize tank stats
+	set_stats(tanks[0]);
+	set_stats(tanks[1]);
+
+	$(".canvas").css("width", mapWidth - mapBorder * 2);
+	$(".canvas").css("height", mapHeight - mapBorder * 2);
 
 	$(".tank, .tank_ghost").css("width", tankWidth);
 	$(".tank, .tank_ghost").css("height", tankHeight);
 
 	// Set the ghost border width css
 	$(".tank_ghost").css("border-width", ghostWidth);
+
+	// Set the canvas border width css
+	$(".canvas").css("border-width", mapBorder);
 
 	var rand = Math.floor(Math.random() * 2);
 	set_tagged("tank_" + rand);

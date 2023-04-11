@@ -41,7 +41,7 @@ body {
 .canvas {
 	background: transparent url(images/grass_832.jpg) repeat;
 	position: relative;
-	border: 20px dashed #990000cc;
+	border: dashed #990000cc;
 	overflow: hidden;
 }
 .tank {
