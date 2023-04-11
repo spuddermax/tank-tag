@@ -2,7 +2,7 @@
 const numTanks = 2;
 const numTrees = 100;
 
-const mapWidth = 1920;
+const mapWidth = 1220;
 const mapHeight = 1080;
 const mapBorder = 20;
 const tankWidth = 50;
@@ -282,8 +282,33 @@ function set_tagged(tank_id) {
 		tanks[1].tagged = true;
 		$(".tank_1").addClass("tagged");
 	}
+	send_to_base(tank_id);
 	tag_timer = timer_max;
 	$(".global_tag_timer").fadeIn(500);
+}
+
+function send_to_base(tank_id) {
+	console.log("send_to_base(" + tank_id + ")");
+	if (tanks[0].id == tank_id) {
+		tanks[0].x = bases[0].x + baseWidth / 2 - tankWidth / 2;
+		tanks[0].y = bases[0].y + baseHeight / 2 - tankHeight / 2;
+		tanks[0].colX = bases[0].x + baseWidth / 2 - tankWidth / 2;
+		tanks[0].colY = bases[0].y + baseHeight / 2 - tankHeight / 2;
+
+		tanks[0].speed = 0;
+		$(".tank_0").css("opacity", 0);
+		move_tank(tanks[0]);
+		$(".tank_0").animate({ opacity: 1 }, 1000);
+	} else if (tanks[1].id == tank_id) {
+		tanks[1].x = bases[1].x + baseWidth / 2 - tankWidth / 2;
+		tanks[1].y = bases[1].y + baseHeight / 2 - tankHeight / 2;
+		tanks[1].colX = bases[1].x + baseWidth / 2 - tankWidth / 2;
+		tanks[1].colY = bases[1].y + baseHeight / 2 - tankHeight / 2;
+		tanks[1].speed = 0;
+		$(".tank_1").css("opacity", 0);
+		move_tank(tanks[1]);
+		$(".tank_1").animate({ opacity: 1 }, 1000);
+	}
 }
 
 // Check for collisions between two objects
