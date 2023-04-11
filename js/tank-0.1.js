@@ -233,8 +233,8 @@ function init() {
 	$(".canvas").css("width", mapWidth);
 	$(".canvas").css("height", mapHeight);
 
-	$(".tank").css("width", tankWidth);
-	$(".tank").css("height", tankHeight);
+	$(".tank, .tank_ghost").css("width", tankWidth);
+	$(".tank, .tank_ghost").css("height", tankHeight);
 
 	var rand = Math.floor(Math.random() * 2);
 	set_tagged("tank_" + rand);
@@ -248,7 +248,7 @@ function init() {
 
 // Set the tagged tank
 function set_tagged(tank_id) {
-	console.log("set_tagged(" + tank_id + ")");
+	//console.log("set_tagged(" + tank_id + ")");
 
 	$(".tank").removeClass("tagged");
 
@@ -278,9 +278,9 @@ function checkArrayCollision(array, obj) {
 	for (let i = 0; i < array.length; i++) {
 		if (array[i].id === obj.id) continue;
 		if (checkObjectCollision(array[i], obj)) {
-			console.log(
-				"collision detected: " + array[i].id + " and " + obj.id
-			);
+			// console.log(
+			// 	"collision detected: " + array[i].id + " and " + obj.id
+			// );
 			if (
 				array[i].className.includes("tank") &&
 				obj.className.includes("tank") &&
@@ -499,13 +499,19 @@ function keyListener(e) {
 		39: () => {
 			//console.log("turn right 0");
 			tanks[0].angle = (tanks[0].angle + 45) % 360;
-			$(".tank_0").css("transform", `rotate(${tanks[0].angle}deg)`);
+			$(".tank_0, .tank_0_ghost").css(
+				"transform",
+				`rotate(${tanks[0].angle}deg)`
+			);
 			set_stats(tanks[0]);
 		},
 		37: () => {
 			//console.log("turn left 0");
 			tanks[0].angle = (tanks[0].angle - 45 + 360) % 360;
-			$(".tank_0").css("transform", `rotate(${tanks[0].angle}deg)`);
+			$(".tank_0, .tank_0_ghost").css(
+				"transform",
+				`rotate(${tanks[0].angle}deg)`
+			);
 			set_stats(tanks[0]);
 		},
 		87: () => {
@@ -521,13 +527,19 @@ function keyListener(e) {
 		68: () => {
 			//console.log("turn right 1");
 			tanks[1].angle = (tanks[1].angle + 45) % 360;
-			$(".tank_1").css("transform", `rotate(${tanks[1].angle}deg)`);
+			$(".tank_1, .tank_1_ghost").css(
+				"transform",
+				`rotate(${tanks[1].angle}deg)`
+			);
 			set_stats(tanks[1]);
 		},
 		65: () => {
 			//console.log("turn left 1");
 			tanks[1].angle = (tanks[1].angle - 45 + 360) % 360;
-			$(".tank_1").css("transform", `rotate(${tanks[1].angle}deg)`);
+			$(".tank_1, .tank_1_ghost").css(
+				"transform",
+				`rotate(${tanks[1].angle}deg)`
+			);
 			set_stats(tanks[1]);
 		},
 		// 80: () => {
