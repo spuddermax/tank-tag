@@ -2,7 +2,7 @@
 const numTanks = 2;
 const numTrees = 100;
 
-const mapWidth = 1220;
+const mapWidth = 1920;
 const mapHeight = 1080;
 const mapBorder = 20;
 const tankWidth = 50;
