@@ -30,7 +30,7 @@ let trees = [];
 
 // Game timer
 let timer = 0;
-const timer_max = 800;
+const timer_max = 750;
 let tag_timer = timer_max;
 
 const move_res_diag = 1.1; // Movement resolution in diagonal direction
@@ -284,6 +284,7 @@ function set_tagged(tank_id) {
 		$(".tank_1").addClass("tagged");
 	}
 	tag_timer = timer_max;
+	$(".global_tag_timer").fadeIn(500);
 }
 
 // Check for collisions between two objects
@@ -576,11 +577,12 @@ function play_game() {
 
 	$("#timer").html(timer);
 	$("#tag_timer").html(tag_timer);
-	// set global_tag_timer to 10% of tag_timer
-	$("#global_tag_timer").html(Math.floor(tag_timer / 50));
+	$("#global_tag_timer").html(Math.ceil(tag_timer / 50));
 
 	if (tag_timer > 0) {
 		tag_timer--;
+	} else if ($(".global_tag_timer").is(":visible")) {
+		$(".global_tag_timer").fadeOut(1000);
 	}
 
 	if (play_status) {
