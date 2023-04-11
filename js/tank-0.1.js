@@ -485,7 +485,7 @@ function keyListener(e) {
 	const validKeys = {
 		73: () => {
 			var current_height = $("#instructions").height();
-			current_height === 186
+			current_height === 200
 				? $("#instructions").animate({ height: "20px" }, 500)
 				: $("#instructions").animate({ height: "200px" }, 500);
 		},
