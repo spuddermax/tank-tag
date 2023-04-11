@@ -259,7 +259,6 @@ function init() {
 	play_status = false;
 	set_scroll(tanks[0].x, tanks[0].y, tanks[0].id);
 	set_scroll(tanks[1].x, tanks[1].y, tanks[1].id);
-	// set_scroll(tanks[2].x, tanks[2].y, tanks[2].id);
 }
 
 // Set the tagged tank
@@ -271,20 +270,12 @@ function set_tagged(tank_id) {
 	if (tanks[0].id == tank_id) {
 		tanks[0].tagged = true;
 		tanks[1].tagged = false;
-		// tanks[2].tagged = false;
 		$(".tank_0").addClass("tagged");
 	} else if (tanks[1].id == tank_id) {
 		tanks[0].tagged = false;
 		tanks[1].tagged = true;
-		// tanks[2].tagged = false;
 		$(".tank_1").addClass("tagged");
 	}
-	// } else if (tanks[2].id == tank_id) {
-	// 	tanks[0].tagged = false;
-	// 	tanks[1].tagged = false;
-	// 	tanks[2].tagged = true;
-	// 	$(".tank_2").addClass("tagged");
-	// }
 	tag_timer = 200;
 }
 
@@ -496,7 +487,7 @@ function keyListener(e) {
 			var current_height = $("#instructions").height();
 			current_height === 186
 				? $("#instructions").animate({ height: "20px" }, 500)
-				: $("#instructions").animate({ height: "186px" }, 500);
+				: $("#instructions").animate({ height: "200px" }, 500);
 		},
 		32: () => {
 			play_status ? stop_game() : start_game();
@@ -558,11 +549,10 @@ function keyListener(e) {
 			);
 			set_stats(tanks[1]);
 		},
-		// 80: () => {
-		// 	console.log("forward 2");
-		// 	tanks[2].speed++;
-		// 	tanks[2].speed = Math.min(1, tanks[2].speed);
-		// },
+		71: () => {
+			//console.log("toggle ghosts");
+			$(".tank_0_ghost, .tank_1_ghost").toggle();
+		},
 	};
 
 	const func = validKeys[e.keyCode];
