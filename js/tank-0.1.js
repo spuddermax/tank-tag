@@ -92,12 +92,14 @@ class Tank extends Sprite {
 
 		this.audio.engineStart.addEventListener("ended", () => {
 			this.audio.engineIdle.loop = true;
-			this.audio.engineIdle.play();
+			if (playStatus) this.audio.engineIdle.play();
 		});
 		this.audio.engineIdle.addEventListener("pause", () => {
-			this.audio.engineStop.play();
+			console.log("engineIdle paused");
+			if (playStatus) this.audio.engineStop.play();
 		});
 		this.audio.engineIdle.addEventListener("ended", () => {
+			console.log("engineIdle ended");
 			this.audio.engineStop.play();
 		});
 	}
@@ -697,12 +699,28 @@ function playGame() {
 function stopGame() {
 	playStatus = false;
 	backgroundSounds.pause();
+	// Pause the engineIdle sound for each tank
+	for (var i = 0; i < tanks.length; i++) {
+		if (tanks[i].speed !== 0) {
+			if (!tanks[i].audio.engineIdle.paused)
+				tanks[i].audio.engineIdle.pause();
+			else if (!tanks[i].audio.engineStart.paused)
+				tanks[i].audio.engineStart.pause();
+		}
+	}
 }
 
 // Start the game
 function startGame() {
 	playStatus = true;
 	backgroundSounds.play();
+
+	for (var i = 0; i < tanks.length; i++) {
+		if (tanks[i].speed !== 0) {
+			tanks[i].audio.engineIdle.play();
+		}
+	}
+
 	playGame();
 }
 
