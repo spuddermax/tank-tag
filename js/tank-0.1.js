@@ -21,6 +21,9 @@ const treeTypes = 7;
 
 const baseSeparation = 400;
 
+// Define the audio settings
+const engineIdleTimeout = 4000;
+
 // Define tank, base, and tree arrays
 let tanks = [];
 let tankGhosts = [];
@@ -57,17 +60,8 @@ class Sprite {
 		this.angle = props.angle;
 		this.tagged = props.false;
 		this.tagable = props.tagable;
+		this.lastDriveTime = Date.now();
 	}
-
-	update = function (updates) {
-		this.x = updates.x;
-		this.y = updates.y;
-		this.speed = updates.speed;
-		this.angle = updates.angle;
-		this.w = updates.w;
-		this.h = updates.h;
-		this.tagged = updates.tagged;
-	};
 
 	draw = function (parent) {
 		if (parent) {
@@ -79,6 +73,57 @@ class Sprite {
 			parent.appendChild(spriteElement);
 		}
 	};
+}
+
+// Tank class extends the Sprite class
+class Tank extends Sprite {
+	constructor(props) {
+		console.log("Tank constructor");
+		super(props);
+		this.tagable = true;
+		this.lastDriveTime = Date.now();
+		this.audio = {
+			engineIdle: new Audio("sound/engine_idle.mp3"),
+			engineStart: new Audio("sound/engine_start1.mp3"),
+			engineStop: new Audio("sound/engine_stop1.mp3"),
+		};
+
+		this.audio.engineStart.addEventListener("ended", () => {
+			this.audio.engineIdle.loop = true;
+			this.audio.engineIdle.play();
+		});
+		this.audio.engineIdle.addEventListener("pause", () => {
+			this.audio.engineStop.play();
+		});
+		this.audio.engineIdle.addEventListener("ended", () => {
+			this.audio.engineStop.play();
+		});
+	}
+}
+
+function queueEngineStop(tank) {
+	console.log(`queueEngineStop for tank ${tank.id}`);
+	console.log(`tank.speed: ${tank.speed}`);
+	setTimeout(() => {
+		const lastDriveTime = Date.now() - tank.lastDriveTime;
+		if (lastDriveTime > engineIdleTimeout && tank.speed === 0) {
+			tank.audio.engineIdle.pause();
+			tank.audio.engineIdle.currentTime = 0;
+		}
+	}, engineIdleTimeout);
+}
+
+function queueEngineStart(tank) {
+	console.log(`queueEngineStart for tank ${tank.id}`);
+	console.log(`tank.speed: ${tank.speed}`);
+	// if the tank is moving and engineStart1 and engineIdle1 are not alredy playing, start the engine
+	if (
+		tank.speed !== 0 &&
+		tank.audio.engineStart.paused &&
+		tank.audio.engineIdle.paused
+	) {
+		tank.audio.engineStart.play();
+	}
 }
 
 function buildAssets() {
@@ -141,7 +186,7 @@ function buildAssets() {
 		$(`#tag_timer_${i}`).css("left", baseX + baseWidth / 2 - 30);
 
 		// Create the tank
-		const tank = new Sprite({
+		const tank = new Tank({
 			id: `tank_${i}`,
 			className: `tank_${i} tank rotate-135`,
 			x: baseX + baseWidth / 2 - tankWidth / 2,
@@ -225,7 +270,6 @@ function buildAssets() {
 			colH: treeTrunkHeight,
 			speed: 0,
 			angle: 0,
-			tagged: false,
 			tagable: false,
 		});
 		tree.draw(document.getElementById("canvas_0"));
@@ -547,17 +591,34 @@ function keyListener(e) {
 			$(".paused").toggle();
 		},
 		38: () => {
-			//console.log("forward 0");
+			console.log("forward 0");
+			tanks[0].lastDriveTime = Date.now();
+			if (tanks[0].speed !== 0) {
+				console.log("engine stop");
+				queueEngineStop(tanks[0]);
+			}
 			tanks[0].speed++;
 			tanks[0].speed = Math.min(1, tanks[0].speed);
+			queueEngineStart(tanks[0]);
 		},
 		40: () => {
-			//console.log("back 0");
+			console.log("back 0");
+			tanks[0].lastDriveTime = Date.now();
 			tanks[0].speed--;
+
+			if (tanks[0].speed === 0) {
+				console.log("engine stop");
+				queueEngineStop(tanks[0]);
+			}
+			if (tanks[0].speed !== 0) {
+				console.log("engine start");
+				queueEngineStart(tanks[0]);
+			}
+
 			tanks[0].speed = Math.max(-1, tanks[0].speed);
 		},
 		39: () => {
-			//console.log("turn right 0");
+			console.log("turn right 0");
 			tanks[0].angle = (tanks[0].angle + 45) % 360;
 			$(".tank_0, .tank_0_ghost").css(
 				"transform",
@@ -566,7 +627,7 @@ function keyListener(e) {
 			setStats(tanks[0]);
 		},
 		37: () => {
-			//console.log("turn left 0");
+			console.log("turn left 0");
 			tanks[0].angle = (tanks[0].angle - 45 + 360) % 360;
 			$(".tank_0, .tank_0_ghost").css(
 				"transform",
@@ -575,17 +636,32 @@ function keyListener(e) {
 			setStats(tanks[0]);
 		},
 		87: () => {
-			//console.log("forward 1");
+			console.log("forward 1");
+			tanks[1].lastDriveTime = Date.now();
+			if (tanks[1].speed !== 0) {
+				console.log("engine stop");
+				queueEngineStop(tanks[1]);
+			}
 			tanks[1].speed++;
 			tanks[1].speed = Math.min(1, tanks[1].speed);
+			queueEngineStart(tanks[1]);
 		},
 		83: () => {
-			//console.log("back 1");
+			console.log("back 1");
 			tanks[1].speed--;
+			if (tanks[1].speed === 0) {
+				console.log("engine stop");
+				queueEngineStop(tanks[1]);
+			}
+			if (tanks[1].speed !== 0) {
+				console.log("engine start");
+				queueEngineStart(tanks[1]);
+			}
+
 			tanks[1].speed = Math.max(-1, tanks[1].speed);
 		},
 		68: () => {
-			//console.log("turn right 1");
+			console.log("turn right 1");
 			tanks[1].angle = (tanks[1].angle + 45) % 360;
 			$(".tank_1, .tank_1_ghost").css(
 				"transform",
@@ -594,7 +670,7 @@ function keyListener(e) {
 			setStats(tanks[1]);
 		},
 		65: () => {
-			//console.log("turn left 1");
+			console.log("turn left 1");
 			tanks[1].angle = (tanks[1].angle - 45 + 360) % 360;
 			$(".tank_1, .tank_1_ghost").css(
 				"transform",
@@ -603,7 +679,7 @@ function keyListener(e) {
 			setStats(tanks[1]);
 		},
 		71: () => {
-			//console.log("toggle ghosts");
+			console.log("toggle ghosts");
 			$(".tank_0_ghost, .tank_1_ghost").toggle();
 		},
 	};
