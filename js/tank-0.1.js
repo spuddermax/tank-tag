@@ -158,7 +158,6 @@ function buildAssets() {
 		});
 		tank.draw(document.getElementById("canvas_0"));
 		tank.draw(document.getElementById("canvas_1"));
-		//tank.draw(document.getElementById("canvas_2"));
 		tanks.push(tank);
 
 		// Create the tank ghost
@@ -230,13 +229,9 @@ function buildAssets() {
 		});
 		tree.draw(document.getElementById("canvas_0"));
 		tree.draw(document.getElementById("canvas_1"));
-		//tree.draw(document.getElementById("canvas_2"));
 		trees.push(tree);
 	}
 }
-// Base walls
-//var base_1_wall_1 = new Tank('50',365,0,0,0,35,275,true);
-//var base_1_wall_2 = new Tank('51',0,365,0,0,275,35,true);
 
 // Initialize the game
 function init() {
