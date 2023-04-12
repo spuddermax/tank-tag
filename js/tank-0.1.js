@@ -27,18 +27,19 @@ let tankGhosts = [];
 let bases = [];
 let trees = [];
 
-// Game timer
+// timers
+const taggedFadeTime = 4000;
+const timerMax = 250;
+let tagTimer = timerMax;
 let timer = 0;
-const timer_max = 250;
-let tag_timer = timer_max;
 
-const move_res_diag = 1.1; // Movement resolution in diagonal direction
-const move_res = 1.6; // Movement resolution in horizontal/vertical direction
-const msec_rate = 20; // Game refresh rate, in milliseconds
+const moveResDiag = 1.1; // Movement resolution in diagonal direction
+const moveRes = 1.6; // Movement resolution in horizontal/vertical direction
+const msecRate = 20; // Game refresh rate, in milliseconds
 
-let do_check_move = false; // Track if we want to move an object
-let valid_key = false; // Track if a valid game key is pressed
-let play_status = false; // Track game mode, pause or play
+let doCheckMove = false; // Track if we want to move an object
+let validKey = false; // Track if a valid game key is pressed
+let playStatus = false; // Track game mode, pause or play
 
 class Sprite {
 	constructor(props) {
@@ -238,8 +239,8 @@ function init() {
 	buildAssets();
 
 	// Initialize tank stats
-	set_stats(tanks[0]);
-	set_stats(tanks[1]);
+	setStats(tanks[0]);
+	setStats(tanks[1]);
 
 	$(".canvas").css("width", mapWidth - mapBorder * 2);
 	$(".canvas").css("height", mapHeight - mapBorder * 2);
@@ -256,12 +257,12 @@ function init() {
 	var rand = Math.floor(Math.random() * 2);
 	$(`.tag_timer`).hide();
 	$(`#tag_timer_${rand}`).fadeIn(500);
-	set_tagged("tank_" + rand);
+	setTagged("tank_" + rand);
 
 	document.onkeydown = keyListener;
-	play_status = false;
-	set_scroll(tanks[0].x, tanks[0].y, tanks[0].id);
-	set_scroll(tanks[1].x, tanks[1].y, tanks[1].id);
+	playStatus = false;
+	setScroll(tanks[0].x, tanks[0].y, tanks[0].id);
+	setScroll(tanks[1].x, tanks[1].y, tanks[1].id);
 
 	if (window.innerHeight === screen.height) {
 		console.log("Browser is in full-screen mode");
@@ -271,32 +272,32 @@ function init() {
 }
 
 // Set the tagged tank
-function set_tagged(tank_id) {
-	//console.log("set_tagged(" + tank_id + ")");
+function setTagged(tankId) {
+	//console.log("set_tagged(" + tankId + ")");
 
 	$(".tank").removeClass("tagged");
 
-	if (tanks[0].id == tank_id) {
+	if (tanks[0].id == tankId) {
 		tanks[0].tagged = true;
 		tanks[1].tagged = false;
 		$(".tank_0").addClass("tagged");
 		$("#tag_timer_0").fadeIn(500);
-	} else if (tanks[1].id == tank_id) {
+	} else if (tanks[1].id == tankId) {
 		tanks[0].tagged = false;
 		tanks[1].tagged = true;
 		$(".tank_1").addClass("tagged");
 		$("#tag_timer_1").fadeIn(500);
 	}
 
-	if (play_status) {
-		send_to_base(tank_id);
+	if (playStatus) {
+		sendToBase(tankId);
 	}
-	tag_timer = timer_max;
+	tagTimer = timerMax;
 }
 
-function send_to_base(tank_id) {
-	console.log("send_to_base(" + tank_id + ")");
-	if (tanks[0].id == tank_id) {
+function sendToBase(tankId) {
+	console.log("send_to_base(" + tankId + ")");
+	if (tanks[0].id == tankId) {
 		tanks[0].x = bases[0].x + baseWidth / 2 - tankWidth / 2;
 		tanks[0].y = bases[0].y + baseHeight / 2 - tankHeight / 2;
 		tanks[0].colX = bases[0].x + baseWidth / 2 - tankWidth / 2;
@@ -307,11 +308,11 @@ function send_to_base(tank_id) {
 		$("#tank_0").css("opacity", 0);
 		$("#container_tank_0").css("opacity", 0);
 
-		move_tank(tanks[0]);
+		moveTank(tanks[0]);
 
 		$("#tank_0").animate({ opacity: 1 }, 4000);
 		$("#container_tank_0").animate({ opacity: 1 }, 2000);
-	} else if (tanks[1].id == tank_id) {
+	} else if (tanks[1].id == tankId) {
 		tanks[1].x = bases[1].x + baseWidth / 2 - tankWidth / 2;
 		tanks[1].y = bases[1].y + baseHeight / 2 - tankHeight / 2;
 		tanks[1].colX = bases[1].x + baseWidth / 2 - tankWidth / 2;
@@ -321,9 +322,9 @@ function send_to_base(tank_id) {
 		$("#tank_1").css("opacity", 0);
 		$("#container_tank_1").css("opacity", 0);
 
-		move_tank(tanks[1]);
+		moveTank(tanks[1]);
 
-		$("#tank_1").animate({ opacity: 1 }, 4000);
+		$("#tank_1").animate({ opacity: 1 }, taggedFadeTime);
 		$("#container_tank_1").animate({ opacity: 1 }, 2000);
 	}
 }
@@ -342,13 +343,13 @@ function checkArrayCollision(array, obj) {
 				obj.className.includes("tank") &&
 				obj.tagged &&
 				array[i].tagable &&
-				tag_timer <= 0
+				tagTimer <= 0
 			) {
 				// console.log(
 				// 	"tank collision detected: " + array[i].id + " and " + obj.id
 				// );
 				if (!checkArrayCollision(bases, array[i])) {
-					set_tagged(array[i].id);
+					setTagged(array[i].id);
 				} else {
 					// console.log("base collision detected");
 				}
@@ -381,7 +382,7 @@ function checkObjectCollision(obj1, obj2) {
 }
 
 // Move an object
-function move_tank(tank_obj) {
+function moveTank(tank_obj) {
 	// Move the tank object
 	$("." + tank_obj.id).animate(
 		{
@@ -399,11 +400,11 @@ function move_tank(tank_obj) {
 		1
 	);
 
-	set_scroll(tank_obj.x, tank_obj.y, tank_obj.id);
+	setScroll(tank_obj.x, tank_obj.y, tank_obj.id);
 }
 
 // Scroll the map
-function set_scroll(pos_left, pos_top, view_id) {
+function setScroll(pos_left, pos_top, view_id) {
 	//console.log(`set_scroll: ${pos_left}, ${pos_top}, ${view_id}`);
 
 	// Set pos_left and pos_top to the center of the visible container
@@ -423,9 +424,9 @@ function set_scroll(pos_left, pos_top, view_id) {
 }
 
 // See if an object needs to move
-function check_move(tank_obj) {
+function checkMove(tank_obj) {
 	// If tag_timer is greater than zero and the tank is tagged, return
-	if (tag_timer > 0 && tank_obj.tagged) return;
+	if (tagTimer > 0 && tank_obj.tagged) return;
 
 	var curr_x = tank_obj.x;
 	var curr_y = tank_obj.y;
@@ -436,63 +437,63 @@ function check_move(tank_obj) {
 			// forward
 			if (tank_obj.angle == 0) {
 				// North
-				tank_obj.y -= move_res * 2;
+				tank_obj.y -= moveRes * 2;
 			} else if (tank_obj.angle == 45) {
 				// Northeast
-				tank_obj.y -= move_res_diag * 2;
-				tank_obj.x += move_res_diag * 2;
+				tank_obj.y -= moveResDiag * 2;
+				tank_obj.x += moveResDiag * 2;
 			} else if (tank_obj.angle == 90) {
 				// East
-				tank_obj.x += move_res * 2;
+				tank_obj.x += moveRes * 2;
 			} else if (tank_obj.angle == 135) {
 				// Southeast
-				tank_obj.x += move_res_diag * 2;
-				tank_obj.y += move_res_diag * 2;
+				tank_obj.x += moveResDiag * 2;
+				tank_obj.y += moveResDiag * 2;
 			} else if (tank_obj.angle == 180) {
 				// South
-				tank_obj.y += move_res * 2;
+				tank_obj.y += moveRes * 2;
 			} else if (tank_obj.angle == 225) {
 				// Southwest
-				tank_obj.x -= move_res_diag * 2;
-				tank_obj.y += move_res_diag * 2;
+				tank_obj.x -= moveResDiag * 2;
+				tank_obj.y += moveResDiag * 2;
 			} else if (tank_obj.angle == 270) {
 				// West
-				tank_obj.x -= move_res * 2;
+				tank_obj.x -= moveRes * 2;
 			} else if (tank_obj.angle == 315) {
 				// Northwest
-				tank_obj.x -= move_res_diag * 2;
-				tank_obj.y -= move_res_diag * 2;
+				tank_obj.x -= moveResDiag * 2;
+				tank_obj.y -= moveResDiag * 2;
 			}
 		} else if (tank_obj.speed == -1) {
 			// backward
 			if (tank_obj.angle == 0) {
 				// South
-				tank_obj.y += move_res;
+				tank_obj.y += moveRes;
 			} else if (tank_obj.angle == 45) {
 				// Southwest
-				tank_obj.y += move_res_diag;
-				tank_obj.x -= move_res_diag;
+				tank_obj.y += moveResDiag;
+				tank_obj.x -= moveResDiag;
 			} else if (tank_obj.angle == 90) {
 				// West
-				tank_obj.x -= move_res;
+				tank_obj.x -= moveRes;
 			} else if (tank_obj.angle == 135) {
 				// Northwest
-				tank_obj.x -= move_res_diag;
-				tank_obj.y -= move_res_diag;
+				tank_obj.x -= moveResDiag;
+				tank_obj.y -= moveResDiag;
 			} else if (tank_obj.angle == 180) {
 				// North
-				tank_obj.y -= move_res;
+				tank_obj.y -= moveRes;
 			} else if (tank_obj.angle == 225) {
 				// Northeast
-				tank_obj.x += move_res_diag;
-				tank_obj.y -= move_res_diag;
+				tank_obj.x += moveResDiag;
+				tank_obj.y -= moveResDiag;
 			} else if (tank_obj.angle == 270) {
 				// East
-				tank_obj.x += move_res;
+				tank_obj.x += moveRes;
 			} else if (tank_obj.angle == 315) {
 				// Southeast
-				tank_obj.x += move_res_diag;
-				tank_obj.y += move_res_diag;
+				tank_obj.x += moveResDiag;
+				tank_obj.y += moveResDiag;
 			}
 		}
 
@@ -520,18 +521,14 @@ function check_move(tank_obj) {
 			tank_obj.x = curr_x;
 			tank_obj.y = curr_y;
 		} else {
-			move_tank(tank_obj);
-			set_stats(tank_obj);
+			moveTank(tank_obj);
+			setStats(tank_obj);
 		}
 	}
 }
 
 // Set the debugging stats
-function set_stats(tank_obj) {
-	// console.log(
-	// 	`set_stats: ${tank_obj.id} ${tank_obj.x} ${tank_obj.y} ${tank_obj.angle}`
-	// );
-
+function setStats(tank_obj) {
 	$(`#${tank_obj.id}_x_pos`).html(`${Math.floor(tank_obj.x)}`);
 	$(`#${tank_obj.id}_y_pos`).html(`${Math.floor(tank_obj.y)}`);
 	$(`#${tank_obj.id}_angle`).html(`${tank_obj.angle}`);
@@ -546,7 +543,7 @@ function keyListener(e) {
 				: $("#instructions").animate({ height: "200px" }, 500);
 		},
 		32: () => {
-			play_status ? stop_game() : start_game();
+			playStatus ? stop_game() : start_game();
 			$(".paused").toggle();
 		},
 		38: () => {
@@ -566,7 +563,7 @@ function keyListener(e) {
 				"transform",
 				`rotate(${tanks[0].angle}deg)`
 			);
-			set_stats(tanks[0]);
+			setStats(tanks[0]);
 		},
 		37: () => {
 			//console.log("turn left 0");
@@ -575,7 +572,7 @@ function keyListener(e) {
 				"transform",
 				`rotate(${tanks[0].angle}deg)`
 			);
-			set_stats(tanks[0]);
+			setStats(tanks[0]);
 		},
 		87: () => {
 			//console.log("forward 1");
@@ -594,7 +591,7 @@ function keyListener(e) {
 				"transform",
 				`rotate(${tanks[1].angle}deg)`
 			);
-			set_stats(tanks[1]);
+			setStats(tanks[1]);
 		},
 		65: () => {
 			//console.log("turn left 1");
@@ -603,7 +600,7 @@ function keyListener(e) {
 				"transform",
 				`rotate(${tanks[1].angle}deg)`
 			);
-			set_stats(tanks[1]);
+			setStats(tanks[1]);
 		},
 		71: () => {
 			//console.log("toggle ghosts");
@@ -614,47 +611,47 @@ function keyListener(e) {
 	const func = validKeys[e.keyCode];
 	if (func) {
 		func();
-		valid_key = true;
+		validKey = true;
 	}
 }
 
 // Loop the game
 function play_game() {
-	check_move(tanks[0], tanks[1]);
-	check_move(tanks[1], tanks[0]);
+	checkMove(tanks[0], tanks[1]);
+	checkMove(tanks[1], tanks[0]);
 
 	$("#timer").html(timer);
-	$("#tag_timer").html(tag_timer);
-	$(".global_tag_timer").html(Math.ceil(tag_timer / 50));
+	$("#tag_timer").html(tagTimer);
+	$(".global_tag_timer").html(Math.ceil(tagTimer / 50));
 
-	if (tag_timer > 0) {
-		tag_timer--;
+	if (tagTimer > 0) {
+		tagTimer--;
 	} else if ($(".tag_timer").is(":visible")) {
 		$(".tag_timer").fadeOut(1000);
 	}
 
-	if (play_status) {
+	if (playStatus) {
 		// Loop again
-		timer = setTimeout("play_game()", msec_rate);
+		timer = setTimeout("play_game()", msecRate);
 	}
 }
 
 // Pause the game
 function stop_game() {
-	play_status = false;
+	playStatus = false;
 }
 
 // Start the game
 function start_game() {
-	play_status = true;
+	playStatus = true;
 	play_game();
 }
 
 window.addEventListener("resize", function (event) {
-	// for each tank in tanks[], run the set_scroll(tank_obj.x, tank_obj.y, tank_obj.id);
+	// Move the tanks to the new scroll position
 	for (var i = 0; i < tanks.length; i++) {
 		console.log("resize tank " + i + "");
-		set_scroll(tanks[i].x, tanks[i].y, tanks[i].id);
+		setScroll(tanks[i].x, tanks[i].y, tanks[i].id);
 	}
 	if (window.innerHeight === screen.height) {
 		console.log("Browser is in full-screen mode");
