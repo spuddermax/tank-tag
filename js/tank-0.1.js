@@ -78,7 +78,7 @@ class Sprite {
 // Tank class extends the Sprite class
 class Tank extends Sprite {
 	constructor(props) {
-		console.log("Tank constructor");
+		//console.log("Tank constructor");
 		super(props);
 		this.tagable = true;
 		this.lastDriveTime = Date.now();
@@ -102,8 +102,8 @@ class Tank extends Sprite {
 }
 
 function queueEngineStop(tank, timeout) {
-	console.log(`queueEngineStop for tank ${tank.id}`);
-	console.log(`tank.speed: ${tank.speed}`);
+	// console.log(`queueEngineStop for tank ${tank.id}`);
+	// console.log(`tank.speed: ${tank.speed}`);
 	if (timeout === undefined) {
 		timeout = engineIdleTimeout;
 	}
@@ -117,8 +117,8 @@ function queueEngineStop(tank, timeout) {
 }
 
 function queueEngineStart(tank) {
-	console.log(`queueEngineStart for tank ${tank.id}`);
-	console.log(`tank.speed: ${tank.speed}`);
+	// console.log(`queueEngineStart for tank ${tank.id}`);
+	// console.log(`tank.speed: ${tank.speed}`);
 	// if the tank is moving and engineStart1 and engineIdle1 are not alredy playing, start the engine
 	if (
 		tank.speed !== 0 &&
@@ -311,11 +311,11 @@ function init() {
 	setScroll(tanks[0].x, tanks[0].y, tanks[0].id);
 	setScroll(tanks[1].x, tanks[1].y, tanks[1].id);
 
-	if (window.innerHeight === screen.height) {
-		console.log("Browser is in full-screen mode");
-	} else {
-		console.log("Browser is not in full-screen mode");
-	}
+	// if (window.innerHeight === screen.height) {
+	// 	console.log("Browser is in full-screen mode");
+	// } else {
+	// 	console.log("Browser is not in full-screen mode");
+	// }
 }
 
 // Set the tagged tank
@@ -599,11 +599,11 @@ function keyListener(e) {
 			$(".paused").toggle();
 		},
 		38: () => {
-			console.log("forward 0");
+			//console.log("forward 0");
 			if (tagTimer > 0 && tanks[0].tagged) return;
 			tanks[0].lastDriveTime = Date.now();
 			if (tanks[0].speed !== 0) {
-				console.log("engine stop");
+				// console.log("engine stop");
 				queueEngineStop(tanks[0]);
 			}
 			tanks[0].speed++;
@@ -611,24 +611,24 @@ function keyListener(e) {
 			queueEngineStart(tanks[0]);
 		},
 		40: () => {
-			console.log("back 0");
+			// console.log("back 0");
 			if (tagTimer > 0 && tanks[0].tagged) return;
 			tanks[0].lastDriveTime = Date.now();
 			tanks[0].speed--;
 
 			if (tanks[0].speed === 0) {
-				console.log("engine stop");
+				// console.log("engine stop");
 				queueEngineStop(tanks[0]);
 			}
 			if (tanks[0].speed !== 0) {
-				console.log("engine start");
+				// console.log("engine start");
 				queueEngineStart(tanks[0]);
 			}
 
 			tanks[0].speed = Math.max(-1, tanks[0].speed);
 		},
 		39: () => {
-			console.log("turn right 0");
+			// console.log("turn right 0");
 			tanks[0].angle = (tanks[0].angle + 45) % 360;
 			$(".tank_0, .tank_0_ghost").css(
 				"transform",
@@ -637,7 +637,7 @@ function keyListener(e) {
 			setStats(tanks[0]);
 		},
 		37: () => {
-			console.log("turn left 0");
+			// console.log("turn left 0");
 			tanks[0].angle = (tanks[0].angle - 45 + 360) % 360;
 			$(".tank_0, .tank_0_ghost").css(
 				"transform",
@@ -646,11 +646,11 @@ function keyListener(e) {
 			setStats(tanks[0]);
 		},
 		87: () => {
-			console.log("forward 1");
+			// console.log("forward 1");
 			if (tagTimer > 0 && tanks[1].tagged) return;
 			tanks[1].lastDriveTime = Date.now();
 			if (tanks[1].speed !== 0) {
-				console.log("engine stop");
+				// console.log("engine stop");
 				queueEngineStop(tanks[1]);
 			}
 			tanks[1].speed++;
@@ -658,22 +658,22 @@ function keyListener(e) {
 			queueEngineStart(tanks[1]);
 		},
 		83: () => {
-			console.log("back 1");
+			// console.log("back 1");
 			if (tagTimer > 0 && tanks[1].tagged) return;
 			tanks[1].speed--;
 			if (tanks[1].speed === 0) {
-				console.log("engine stop");
+				// console.log("engine stop");
 				queueEngineStop(tanks[1]);
 			}
 			if (tanks[1].speed !== 0) {
-				console.log("engine start");
+				// console.log("engine start");
 				queueEngineStart(tanks[1]);
 			}
 
 			tanks[1].speed = Math.max(-1, tanks[1].speed);
 		},
 		68: () => {
-			console.log("turn right 1");
+			// console.log("turn right 1");
 			tanks[1].angle = (tanks[1].angle + 45) % 360;
 			$(".tank_1, .tank_1_ghost").css(
 				"transform",
@@ -682,7 +682,7 @@ function keyListener(e) {
 			setStats(tanks[1]);
 		},
 		65: () => {
-			console.log("turn left 1");
+			// console.log("turn left 1");
 			tanks[1].angle = (tanks[1].angle - 45 + 360) % 360;
 			$(".tank_1, .tank_1_ghost").css(
 				"transform",
@@ -691,7 +691,7 @@ function keyListener(e) {
 			setStats(tanks[1]);
 		},
 		71: () => {
-			console.log("toggle ghosts");
+			// console.log("toggle ghosts");
 			$(".tank_0_ghost, .tank_1_ghost").toggle();
 		},
 	};
@@ -738,12 +738,12 @@ function start_game() {
 window.addEventListener("resize", function (event) {
 	// Move the tanks to the new scroll position
 	for (var i = 0; i < tanks.length; i++) {
-		console.log("resize tank " + i + "");
+		// console.log("resize tank " + i + "");
 		setScroll(tanks[i].x, tanks[i].y, tanks[i].id);
 	}
-	if (window.innerHeight === screen.height) {
-		console.log("Browser is in full-screen mode");
-	} else {
-		console.log("Browser is not in full-screen mode");
-	}
+	// if (window.innerHeight === screen.height) {
+	// 	// console.log("Browser is in full-screen mode");
+	// } else {
+	// 	// console.log("Browser is not in full-screen mode");
+	// }
 });
