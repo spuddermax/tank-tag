@@ -579,6 +579,9 @@ function setStats(tank_obj) {
 }
 
 function keyListener(e) {
+	// If playStatus is false and key is not 32, return
+	if (!playStatus && e.keyCode != 32) return;
+
 	const validKeys = {
 		73: () => {
 			var current_height = $("#instructions").height();
