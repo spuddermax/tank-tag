@@ -23,6 +23,8 @@ const baseSeparation = 400;
 
 // Define the audio settings
 const engineIdleTimeout = 4000;
+const backgroundSounds = new Audio("sound/forest-wind-and-birds.mp3");
+backgroundSounds.loop = true;
 
 // Define tank, base, and tree arrays
 let tanks = [];
@@ -670,128 +672,8 @@ function keyListener(e) {
 	}
 }
 
-// function keyListener(e) {
-// 	// If playStatus is false and key is not 32, return
-// 	if (!playStatus && e.keyCode != 32) return;
-
-// 	const validKeys = {
-// 		73: () => {
-// 			var current_height = $("#instructions").height();
-// 			current_height === 200
-// 				? $("#instructions").animate({ height: "20px" }, 500)
-// 				: $("#instructions").animate({ height: "200px" }, 500);
-// 		},
-// 		32: () => {
-// 			playStatus ? stopGame() : startGame();
-// 			$(".paused").toggle();
-// 		},
-// 		38: () => {
-// 			//console.log("forward 0");
-// 			if (tagTimer > 0 && tanks[0].tagged) return;
-// 			tanks[0].lastDriveTime = Date.now();
-// 			if (tanks[0].speed !== 0) {
-// 				// console.log("engine stop");
-// 				queueEngineStop(tanks[0]);
-// 			}
-// 			tanks[0].speed++;
-// 			tanks[0].speed = Math.min(1, tanks[0].speed);
-// 			queueEngineStart(tanks[0]);
-// 		},
-// 		40: () => {
-// 			// console.log("back 0");
-// 			if (tagTimer > 0 && tanks[0].tagged) return;
-// 			tanks[0].lastDriveTime = Date.now();
-// 			tanks[0].speed--;
-
-// 			if (tanks[0].speed === 0) {
-// 				// console.log("engine stop");
-// 				queueEngineStop(tanks[0]);
-// 			}
-// 			if (tanks[0].speed !== 0) {
-// 				// console.log("engine start");
-// 				queueEngineStart(tanks[0]);
-// 			}
-
-// 			tanks[0].speed = Math.max(-1, tanks[0].speed);
-// 		},
-// 		39: () => {
-// 			// console.log("turn right 0");
-// 			tanks[0].angle = (tanks[0].angle + 45) % 360;
-// 			$(".tank_0, .tank_0_ghost").css(
-// 				"transform",
-// 				`rotate(${tanks[0].angle}deg)`
-// 			);
-// 			setStats(tanks[0]);
-// 		},
-// 		37: () => {
-// 			// console.log("turn left 0");
-// 			tanks[0].angle = (tanks[0].angle - 45 + 360) % 360;
-// 			$(".tank_0, .tank_0_ghost").css(
-// 				"transform",
-// 				`rotate(${tanks[0].angle}deg)`
-// 			);
-// 			setStats(tanks[0]);
-// 		},
-// 		87: () => {
-// 			// console.log("forward 1");
-// 			if (tagTimer > 0 && tanks[1].tagged) return;
-// 			tanks[1].lastDriveTime = Date.now();
-// 			if (tanks[1].speed !== 0) {
-// 				// console.log("engine stop");
-// 				queueEngineStop(tanks[1]);
-// 			}
-// 			tanks[1].speed++;
-// 			tanks[1].speed = Math.min(1, tanks[1].speed);
-// 			queueEngineStart(tanks[1]);
-// 		},
-// 		83: () => {
-// 			// console.log("back 1");
-// 			if (tagTimer > 0 && tanks[1].tagged) return;
-// 			tanks[1].speed--;
-// 			if (tanks[1].speed === 0) {
-// 				// console.log("engine stop");
-// 				queueEngineStop(tanks[1]);
-// 			}
-// 			if (tanks[1].speed !== 0) {
-// 				// console.log("engine start");
-// 				queueEngineStart(tanks[1]);
-// 			}
-
-// 			tanks[1].speed = Math.max(-1, tanks[1].speed);
-// 		},
-// 		68: () => {
-// 			// console.log("turn right 1");
-// 			tanks[1].angle = (tanks[1].angle + 45) % 360;
-// 			$(".tank_1, .tank_1_ghost").css(
-// 				"transform",
-// 				`rotate(${tanks[1].angle}deg)`
-// 			);
-// 			setStats(tanks[1]);
-// 		},
-// 		65: () => {
-// 			// console.log("turn left 1");
-// 			tanks[1].angle = (tanks[1].angle - 45 + 360) % 360;
-// 			$(".tank_1, .tank_1_ghost").css(
-// 				"transform",
-// 				`rotate(${tanks[1].angle}deg)`
-// 			);
-// 			setStats(tanks[1]);
-// 		},
-// 		71: () => {
-// 			// console.log("toggle ghosts");
-// 			$(".tank_0_ghost, .tank_1_ghost").toggle();
-// 		},
-// 	};
-
-// 	const func = validKeys[e.keyCode];
-// 	if (func) {
-// 		func();
-// 		validKey = true;
-// 	}
-// }
-
 // Loop the game
-function play_game() {
+function playGame() {
 	checkMove(tanks[0], tanks[1]);
 	checkMove(tanks[1], tanks[0]);
 
@@ -807,19 +689,21 @@ function play_game() {
 
 	if (playStatus) {
 		// Loop again
-		timer = setTimeout("play_game()", msecRate);
+		timer = setTimeout("playGame()", msecRate);
 	}
 }
 
 // Pause the game
 function stopGame() {
 	playStatus = false;
+	backgroundSounds.pause();
 }
 
 // Start the game
 function startGame() {
 	playStatus = true;
-	play_game();
+	backgroundSounds.play();
+	playGame();
 }
 
 window.addEventListener("resize", function (event) {
