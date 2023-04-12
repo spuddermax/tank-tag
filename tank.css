@@ -54,10 +54,15 @@ body {
 	background-size: contain;
 }
 .tank_ghost {
-	display: block;
 	position: absolute;
 	z-index: 101;
 	border: dashed #35b335aa;
+	font-family: "Orbitron";
+	font-size: 12px;
+	color: lime;
+	display: flex;
+	align-content: center;
+	align-items: flex-end;
 }
 .rotate-0 {
 	transform: rotate(0deg);

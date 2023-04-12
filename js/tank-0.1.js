@@ -180,6 +180,8 @@ function buildAssets() {
 		});
 		tankGhost.draw(document.getElementById(`canvas_${i}`));
 		tankGhosts.push(tankGhost);
+		// Change html in the ghost to say "Player i"
+		$(`#tank_${i}_ghost`).html(`Player ${i + 1}`);
 	}
 
 	// Create the trees.
