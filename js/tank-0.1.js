@@ -187,8 +187,8 @@ function buildAssets() {
 		bases.push(base);
 
 		// Move the tag_timer to the tank base
-		$(`#tag_timer_${i}`).css("top", baseY + 46);
-		$(`#tag_timer_${i}`).css("left", baseX + baseWidth / 2 - 30);
+		$(`.tag_timer_${i}`).css("top", baseY + 46);
+		$(`.tag_timer_${i}`).css("left", baseX + baseWidth / 2 - 30);
 
 		// Create the tank
 		const tank = new Tank({
@@ -305,7 +305,7 @@ function init() {
 
 	var rand = Math.floor(Math.random() * 2);
 	$(`.tag_timer`).hide();
-	$(`#tag_timer_${rand}`).fadeIn(500);
+	$(`.tag_timer_${rand}`).fadeIn(500);
 	setTagged("tank_" + rand);
 
 	document.onkeydown = keyListener;
@@ -329,13 +329,13 @@ function setTagged(tankId) {
 	if (tanks[0].id == tankId) {
 		tanks[0].tagged = true;
 		tanks[1].tagged = false;
+		$(".tag_timer_0").fadeIn(500);
 		$(".tank_0").addClass("tagged");
-		$("#tag_timer_0").fadeIn(500);
 	} else if (tanks[1].id == tankId) {
 		tanks[0].tagged = false;
 		tanks[1].tagged = true;
+		$(".tag_timer_1").fadeIn(500);
 		$(".tank_1").addClass("tagged");
-		$("#tag_timer_1").fadeIn(500);
 	}
 
 	if (playStatus) {
