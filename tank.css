@@ -214,7 +214,7 @@ body {
 	font-family: "Orbitron", sans-serif;
 	text-align: right;
 	color: #ffeb3b;
-	z-index: 99;
+	z-index: 1;
 	width: 100px;
 	height: 62px;
 	background: transparent url(images/timer_board.png) no-repeat;
