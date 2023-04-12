@@ -3,6 +3,11 @@
 		<title>Tank Tag</title>
 		<link rel="stylesheet" type="text/css" href="tank.css" />
 		<link rel="shortcut icon" href="images/tank_red.png" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap"
+			rel="stylesheet" />
 		<script
 			language="javascript"
 			type="text/javascript"
@@ -14,15 +19,18 @@
 				<h1>Paused...</h1>
 				<h4>Hit SPACE to play</h4>
 			</div>
-			<div class="global_tag_timer">
-				<span id="global_tag_timer">15</span>
-			</div>
 			<div id="container_tank_1" class="container">
 				<div id="canvas_1" class="canvas"></div>
+				<div id="tag_timer_1" class="tag_timer">
+					<span class="global_tag_timer">5</span>
+				</div>
 			</div>
 
 			<div id="container_tank_0" class="container">
 				<div id="canvas_0" class="canvas"></div>
+				<div id="tag_timer_0" class="tag_timer">
+					<span class="global_tag_timer">5</span>
+				</div>
 			</div>
 
 			<div id="instructions">

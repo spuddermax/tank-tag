@@ -17,6 +17,7 @@ body {
 	align-items: center;
 }
 .container {
+	position: relative;
 	width: 50%;
 	height: 100vh;
 	background: transparent;
@@ -203,17 +204,19 @@ body {
 	padding: 4vw;
 }
 
-.global_tag_timer {
-	display: block;
+.tag_timer {
+	display: flex;
 	position: absolute;
-	bottom: 2vh;
-	/* font family fixed width */
-	font-family: "Courier New", Courier, monospace;
-	font-size: 2vw;
-	color: rgb(255 255 255);
-	z-index: 100;
-	background-color: #000000bb;
-	border-radius: 1vw;
-	padding: 1vw;
-	width: 16vw;
+	font-family: "Orbitron", sans-serif;
+	text-align: right;
+	color: #ffeb3b;
+	z-index: 99;
+	width: 100px;
+	height: 62px;
+	background: transparent url(images/timer_board.png) no-repeat;
+	font-size: 40px;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+	flex-direction: row;
 }

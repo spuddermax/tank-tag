@@ -135,6 +135,10 @@ function buildAssets() {
 		base.draw(document.getElementById("canvas_2"));
 		bases.push(base);
 
+		// Move the tag_timer to the tank base
+		$(`#tag_timer_${i}`).css("top", baseY + 46);
+		$(`#tag_timer_${i}`).css("left", baseX + baseWidth / 2 - 30);
+
 		// Create the tank
 		const tank = new Sprite({
 			id: `tank_${i}`,
@@ -253,6 +257,8 @@ function init() {
 	$(".canvas").css("border-width", mapBorder);
 
 	var rand = Math.floor(Math.random() * 2);
+	$(`.tag_timer`).hide();
+	$(`#tag_timer_${rand}`).fadeIn(500);
 	set_tagged("tank_" + rand);
 
 	document.onkeydown = keyListener;
@@ -277,16 +283,18 @@ function set_tagged(tank_id) {
 		tanks[0].tagged = true;
 		tanks[1].tagged = false;
 		$(".tank_0").addClass("tagged");
+		$("#tag_timer_0").fadeIn(500);
 	} else if (tanks[1].id == tank_id) {
 		tanks[0].tagged = false;
 		tanks[1].tagged = true;
 		$(".tank_1").addClass("tagged");
+		$("#tag_timer_1").fadeIn(500);
 	}
+
 	if (play_status) {
 		send_to_base(tank_id);
 	}
 	tag_timer = timer_max;
-	$(".global_tag_timer").fadeIn(500);
 }
 
 function send_to_base(tank_id) {
@@ -616,12 +624,12 @@ function play_game() {
 
 	$("#timer").html(timer);
 	$("#tag_timer").html(tag_timer);
-	$("#global_tag_timer").html(Math.ceil(tag_timer / 50));
+	$(".global_tag_timer").html(Math.ceil(tag_timer / 50));
 
 	if (tag_timer > 0) {
 		tag_timer--;
-	} else if ($(".global_tag_timer").is(":visible")) {
-		$(".global_tag_timer").fadeOut(1000);
+	} else if ($(".tag_timer").is(":visible")) {
+		$(".tag_timer").fadeOut(1000);
 	}
 
 	if (play_status) {
