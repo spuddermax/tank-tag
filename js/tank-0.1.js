@@ -344,37 +344,26 @@ function setTagged(tankId) {
 
 function sendToBase(tankId) {
 	console.log("send_to_base(" + tankId + ")");
-	if (tanks[0].id == tankId) {
-		tanks[0].x = bases[0].x + baseWidth / 2 - tankWidth / 2;
-		tanks[0].y = bases[0].y + baseHeight / 2 - tankHeight / 2;
-		tanks[0].colX = bases[0].x + baseWidth / 2 - tankWidth / 2;
-		tanks[0].colY = bases[0].y + baseHeight / 2 - tankHeight / 2;
-		tanks[0].speed = 0;
+	for (let i = 0; i < tanks.length; i++) {
+		if (tanks[i].id === tankId) {
+			const baseX = bases[i].x + baseWidth / 2 - tankWidth / 2;
+			const baseY = bases[i].y + baseHeight / 2 - tankHeight / 2;
+			tanks[i].x = baseX;
+			tanks[i].y = baseY;
+			tanks[i].colX = baseX;
+			tanks[i].colY = baseY;
+			tanks[i].speed = 0;
 
-		// Set the container_tank_1 to 0 opacity
-		$("#tank_0").css("opacity", 0);
-		$("#container_tank_0").css("opacity", 0);
+			$(`#tank_${i}`).css("opacity", 0);
+			$(`#container_tank_${i}`).css("opacity", 0);
 
-		moveTank(tanks[0]);
-		queueEngineStop(tanks[0], 0);
+			moveTank(tanks[i]);
+			queueEngineStop(tanks[i], 0);
 
-		$("#tank_0").animate({ opacity: 1 }, 4000);
-		$("#container_tank_0").animate({ opacity: 1 }, 2000);
-	} else if (tanks[1].id == tankId) {
-		tanks[1].x = bases[1].x + baseWidth / 2 - tankWidth / 2;
-		tanks[1].y = bases[1].y + baseHeight / 2 - tankHeight / 2;
-		tanks[1].colX = bases[1].x + baseWidth / 2 - tankWidth / 2;
-		tanks[1].colY = bases[1].y + baseHeight / 2 - tankHeight / 2;
-		tanks[1].speed = 0;
-
-		$("#tank_1").css("opacity", 0);
-		$("#container_tank_1").css("opacity", 0);
-
-		moveTank(tanks[1]);
-		queueEngineStop(tanks[1], 0);
-
-		$("#tank_1").animate({ opacity: 1 }, taggedFadeTime);
-		$("#container_tank_1").animate({ opacity: 1 }, 2000);
+			$(`#tank_${i}`).animate({ opacity: 1 }, taggedFadeTime);
+			$(`#container_tank_${i}`).animate({ opacity: 1 }, 2000);
+			break;
+		}
 	}
 }
 
