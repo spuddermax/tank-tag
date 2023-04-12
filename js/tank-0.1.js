@@ -352,7 +352,11 @@ function checkArrayCollision(array, obj) {
 				console.log(
 					"tank collision detected: " + array[i].id + " and " + obj.id
 				);
-				set_tagged(array[i].id);
+				if (!checkArrayCollision(bases, array[i])) {
+					set_tagged(array[i].id);
+				} else {
+					console.log("base collision detected");
+				}
 			}
 			collision = true;
 			break;
