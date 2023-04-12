@@ -101,16 +101,19 @@ class Tank extends Sprite {
 	}
 }
 
-function queueEngineStop(tank) {
+function queueEngineStop(tank, timeout) {
 	console.log(`queueEngineStop for tank ${tank.id}`);
 	console.log(`tank.speed: ${tank.speed}`);
+	if (timeout === undefined) {
+		timeout = engineIdleTimeout;
+	}
 	setTimeout(() => {
 		const lastDriveTime = Date.now() - tank.lastDriveTime;
 		if (lastDriveTime > engineIdleTimeout && tank.speed === 0) {
 			tank.audio.engineIdle.pause();
 			tank.audio.engineIdle.currentTime = 0;
 		}
-	}, engineIdleTimeout);
+	}, timeout);
 }
 
 function queueEngineStart(tank) {
@@ -353,6 +356,7 @@ function sendToBase(tankId) {
 		$("#container_tank_0").css("opacity", 0);
 
 		moveTank(tanks[0]);
+		queueEngineStop(tanks[0], 0);
 
 		$("#tank_0").animate({ opacity: 1 }, 4000);
 		$("#container_tank_0").animate({ opacity: 1 }, 2000);
@@ -367,6 +371,7 @@ function sendToBase(tankId) {
 		$("#container_tank_1").css("opacity", 0);
 
 		moveTank(tanks[1]);
+		queueEngineStop(tanks[1], 0);
 
 		$("#tank_1").animate({ opacity: 1 }, taggedFadeTime);
 		$("#container_tank_1").animate({ opacity: 1 }, 2000);
@@ -595,6 +600,7 @@ function keyListener(e) {
 		},
 		38: () => {
 			console.log("forward 0");
+			if (tagTimer > 0 && tanks[0].tagged) return;
 			tanks[0].lastDriveTime = Date.now();
 			if (tanks[0].speed !== 0) {
 				console.log("engine stop");
@@ -606,6 +612,7 @@ function keyListener(e) {
 		},
 		40: () => {
 			console.log("back 0");
+			if (tagTimer > 0 && tanks[0].tagged) return;
 			tanks[0].lastDriveTime = Date.now();
 			tanks[0].speed--;
 
@@ -640,6 +647,7 @@ function keyListener(e) {
 		},
 		87: () => {
 			console.log("forward 1");
+			if (tagTimer > 0 && tanks[1].tagged) return;
 			tanks[1].lastDriveTime = Date.now();
 			if (tanks[1].speed !== 0) {
 				console.log("engine stop");
@@ -651,6 +659,7 @@ function keyListener(e) {
 		},
 		83: () => {
 			console.log("back 1");
+			if (tagTimer > 0 && tanks[1].tagged) return;
 			tanks[1].speed--;
 			if (tanks[1].speed === 0) {
 				console.log("engine stop");
