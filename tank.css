@@ -204,7 +204,6 @@ body {
 	position: absolute;
 	top: 1vh;
 	font-family: "Orbitron", sans-serif;
-	font-size: 2.5vw;
 	color: #f00;
 	z-index: 100;
 	background-color: #000000bb;
@@ -217,7 +216,7 @@ body {
 	position: absolute;
 	font-family: "Pinewood Regular", sans-serif;
 	text-align: right;
-	color: #ffeb3b;
+	color: #b88100;
 	z-index: 1;
 	width: 100px;
 	height: 62px;
@@ -227,4 +226,11 @@ body {
 	align-content: center;
 	align-items: center;
 	flex-direction: row;
+}
+
+h1 {
+	font-family: "Pinewood Regular", sans-serif;
+	font-size: 4.5vw;
+	font-weight: 100;
+	color: red;
 }
