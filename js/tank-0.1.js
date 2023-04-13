@@ -585,6 +585,11 @@ function setStats(tank_obj) {
 	$(`#${tank_obj.id}_angle`).html(`${tank_obj.angle}`);
 }
 
+function togglePause() {
+	playStatus ? stopGame() : startGame();
+	$(".paused").toggle();
+}
+
 // Cache frequently accessed elements
 const tankProfile0 = $(".tank_0, .tank_0_ghost");
 const tankProfile1 = $(".tank_1, .tank_1_ghost");
@@ -602,8 +607,7 @@ function keyListener(e) {
 				: $("#instructions").animate({ height: "200px" }, 500);
 		},
 		32: () => {
-			playStatus ? stopGame() : startGame();
-			$(".paused").toggle();
+			togglePause();
 		},
 		87: () => {
 			if (tagTimer > 0 && tanks[0].tagged) return;
@@ -744,4 +748,9 @@ window.addEventListener("resize", function (event) {
 	// } else {
 	// 	// console.log("Browser is not in full-screen mode");
 	// }
+});
+
+// togglePause() when the user clicks on the pause button
+$(".paused").click(function () {
+	togglePause();
 });
