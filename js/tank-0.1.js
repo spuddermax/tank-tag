@@ -140,6 +140,9 @@ function buildAssets() {
 	bases = [];
 	trees = [];
 
+	const mapPortions = 1 / numTanks;
+	const portionWidth = mapWidth * mapPortions;
+
 	// build the tanks and bases
 	for (let i = 0; i < numTanks; i++) {
 		let baseX = 0;
@@ -151,8 +154,14 @@ function buildAssets() {
 		// check for collisiions between bases and only set baseX and baseY if there is no collision
 		while (baseCollision) {
 			attempts++;
-			baseX = Math.floor(Math.random() * (mapWidth - baseWidth)); // subtract the base width to ensure it doesn't go outside the map
-			baseY = Math.floor(Math.random() * (mapHeight - baseHeight)); // subtract the base height to ensure it doesn't go outside the map
+			baseX =
+				Math.floor(
+					Math.random() * (portionWidth - baseWidth - mapBorder * 2)
+				) +
+				i * portionWidth; // subtract the base width to ensure it doesn't go outside the map
+			baseY = Math.floor(
+				Math.random() * (mapHeight - baseHeight - mapBorder * 2)
+			); // subtract the base height to ensure it doesn't go outside the map
 			baseCollision = checkArrayCollision(bases, {
 				colX: baseX,
 				colY: baseY,
@@ -596,7 +605,7 @@ function keyListener(e) {
 			playStatus ? stopGame() : startGame();
 			$(".paused").toggle();
 		},
-		38: () => {
+		87: () => {
 			if (tagTimer > 0 && tanks[0].tagged) return;
 			tanks[0].lastDriveTime = Date.now();
 			if (tanks[0].speed !== 0) queueEngineStop(tanks[0]);
@@ -604,7 +613,7 @@ function keyListener(e) {
 			tanks[0].speed = Math.min(1, tanks[0].speed);
 			queueEngineStart(tanks[0]);
 		},
-		40: () => {
+		83: () => {
 			if (tagTimer > 0 && tanks[0].tagged) return;
 			tanks[0].lastDriveTime = Date.now();
 			tanks[0].speed--;
@@ -612,7 +621,7 @@ function keyListener(e) {
 			if (tanks[0].speed !== 0) queueEngineStart(tanks[0]);
 			tanks[0].speed = Math.max(-1, tanks[0].speed);
 		},
-		39: () => {
+		68: () => {
 			tanks[0].angle = (tanks[0].angle + 45) % 360;
 			$(".tank_0, .tank_0_ghost").css(
 				"transform",
@@ -620,7 +629,7 @@ function keyListener(e) {
 			);
 			setStats(tanks[0]);
 		},
-		37: () => {
+		65: () => {
 			tanks[0].angle = (tanks[0].angle - 45 + 360) % 360;
 			$(".tank_0, .tank_0_ghost").css(
 				"transform",
@@ -628,7 +637,7 @@ function keyListener(e) {
 			);
 			setStats(tanks[0]);
 		},
-		87: () => {
+		38: () => {
 			if (tagTimer > 0 && tanks[1].tagged) return;
 			tanks[1].lastDriveTime = Date.now();
 			if (tanks[1].speed !== 0) {
@@ -637,7 +646,7 @@ function keyListener(e) {
 			tanks[1].speed = Math.min(1, tanks[1].speed + 1);
 			queueEngineStart(tanks[1]);
 		},
-		83: () => {
+		40: () => {
 			if (tagTimer > 0 && tanks[1].tagged) return;
 			tanks[1].speed = Math.max(-1, tanks[1].speed - 1);
 			if (tanks[1].speed === 0) {
@@ -646,7 +655,7 @@ function keyListener(e) {
 				queueEngineStart(tanks[1]);
 			}
 		},
-		68: () => {
+		39: () => {
 			tanks[1].angle = (tanks[1].angle + 45) % 360;
 			$(".tank_1, .tank_1_ghost").css(
 				"transform",
@@ -654,7 +663,7 @@ function keyListener(e) {
 			);
 			setStats(tanks[1]);
 		},
-		65: () => {
+		37: () => {
 			// console.log("turn left 1");
 			tanks[1].angle = (tanks[1].angle - 45 + 360) % 360;
 			$(".tank_1, .tank_1_ghost").css(
