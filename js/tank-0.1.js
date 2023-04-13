@@ -751,6 +751,6 @@ window.addEventListener("resize", function (event) {
 });
 
 // togglePause() when the user clicks on the pause button
-$(".paused").click(function () {
+$("body").click(function () {
 	togglePause();
 });
