@@ -134,6 +134,16 @@ function queueEngineStart(tank) {
 }
 
 function buildAssets() {
+	// Stop all playing audio asynchronously
+	for (let i = 0; i < tanks.length; i++) {
+		tanks[i].audio.engineIdle.pause();
+		tanks[i].audio.engineIdle.currentTime = 0;
+		tanks[i].audio.engineStart.pause();
+		tanks[i].audio.engineStart.currentTime = 0;
+		tanks[i].audio.engineStop.pause();
+		tanks[i].audio.engineStop.currentTime = 0;
+	}
+
 	// clear the arrays, and the canvas_0 and canvas_1 elements
 	tanks = [];
 	tankGhosts = [];
@@ -686,6 +696,12 @@ function keyListener(e) {
 		},
 		71: () => {
 			$(".tank_0_ghost, .tank_1_ghost").toggle();
+		},
+		// When r key is pressed, show an alert to ask if the user wants to restart the game by calling init()
+		82: () => {
+			if (confirm("Are you sure you want to restart?")) {
+				init();
+			}
 		},
 	};
 	const func = validKeys[e.keyCode];
