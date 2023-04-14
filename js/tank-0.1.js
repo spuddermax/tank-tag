@@ -46,31 +46,6 @@ let doCheckMove = false; // Track if we want to move an object
 let validKey = false; // Track if a valid game key is pressed
 let playStatus = false; // Track game mode, pause or play
 
-function queueEngineStop(tank, timeout) {
-	// console.log(`queueEngineStop for tank ${tank.id}`);
-	// console.log(`tank.speed: ${tank.speed}`);
-	if (timeout === undefined) {
-		timeout = engineIdleTimeout;
-	}
-	setTimeout(() => {
-		const lastDriveTime = performance.now() - tank.lastDriveTime;
-		if (lastDriveTime > engineIdleTimeout && tank.speed === 0) {
-			tank.audio.engineIdle.pause();
-			tank.audio.engineIdle.currentTime = 0;
-		}
-	}, timeout);
-}
-
-function queueEngineStart(tank) {
-	if (
-		tank.speed !== 0 &&
-		tank.audio.engineStart.paused &&
-		tank.audio.engineIdle.paused
-	) {
-		tank.audio.engineStart.play();
-	}
-}
-
 function buildAssets() {
 	// Stop all playing audio asynchronously
 	for (let i = 0; i < tanks.length; i++) {
@@ -257,8 +232,8 @@ function init() {
 	$(".global_tag_timer").html(Math.ceil(tagTimer / 50));
 
 	// Initialize tank stats
-	setStats(tanks[0]);
-	setStats(tanks[1]);
+	tanks[0].setStats();
+	tanks[1].setStats();
 
 	$(".canvas").css("width", mapWidth - mapBorder * 2);
 	$(".canvas").css("height", mapHeight - mapBorder * 2);
@@ -273,8 +248,6 @@ function init() {
 	$(".canvas").css("border-width", mapBorder);
 
 	const rand = Math.floor(Math.random() * 2);
-	console.log("Set tagged rand: " + rand);
-
 	$(`.tag_timer`).hide();
 	$(`.tag_timer_${rand}`).fadeIn(500);
 	tanks[rand].setTagged();
@@ -289,31 +262,6 @@ function init() {
 	// } else {
 	// 	console.log("Browser is not in full-screen mode");
 	// }
-}
-
-function sendToBase(tankId) {
-	console.log("send_to_base(" + tankId + ")");
-	for (let i = 0; i < tanks.length; i++) {
-		if (tanks[i].id === tankId) {
-			const baseX = bases[i].x + baseWidth / 2 - tankWidth / 2;
-			const baseY = bases[i].y + baseHeight / 2 - tankHeight / 2;
-			tanks[i].x = baseX;
-			tanks[i].y = baseY;
-			tanks[i].colX = baseX;
-			tanks[i].colY = baseY;
-			tanks[i].speed = 0;
-
-			$(`#tank_${i}`).css("opacity", 0);
-			$(`#container_tank_${i}`).css("opacity", 0);
-
-			tanks[i].move();
-			queueEngineStop(tanks[i], 0);
-
-			$(`#tank_${i}`).animate({ opacity: 1 }, taggedFadeTime);
-			$(`#container_tank_${i}`).animate({ opacity: 1 }, 2000);
-			break;
-		}
-	}
 }
 
 // Check for collisions between two objects
@@ -487,16 +435,9 @@ function checkMove(tank_obj) {
 			tank_obj.y = curr_y;
 		} else {
 			tank_obj.move();
-			setStats(tank_obj);
+			tank_obj.setStats();
 		}
 	}
-}
-
-// Set the debugging stats
-function setStats(tank_obj) {
-	$(`#${tank_obj.id}_x_pos`).html(`${Math.floor(tank_obj.x)}`);
-	$(`#${tank_obj.id}_y_pos`).html(`${Math.floor(tank_obj.y)}`);
-	$(`#${tank_obj.id}_angle`).html(`${tank_obj.angle}`);
 }
 
 function togglePause() {
@@ -532,17 +473,17 @@ function keyListener(e) {
 		87: () => {
 			if (tagTimer > 0 && tanks[0].tagged) return;
 			tanks[0].lastDriveTime = performance.now();
-			if (tanks[0].speed !== 0) queueEngineStop(tanks[0]);
+			if (tanks[0].speed !== 0) tanks[0].queueEngineStop();
 			tanks[0].speed++;
 			tanks[0].speed = Math.min(1, tanks[0].speed);
-			queueEngineStart(tanks[0]);
+			tanks[0].queueEngineStart();
 		},
 		83: () => {
 			if (tagTimer > 0 && tanks[0].tagged) return;
 			tanks[0].lastDriveTime = performance.now();
 			tanks[0].speed--;
-			if (tanks[0].speed === 0) queueEngineStop(tanks[0]);
-			if (tanks[0].speed !== 0) queueEngineStart(tanks[0]);
+			if (tanks[0].speed === 0) tanks[0].queueEngineStop();
+			if (tanks[0].speed !== 0) tanks[0].queueEngineStart();
 			tanks[0].speed = Math.max(-1, tanks[0].speed);
 		},
 		68: () => {
@@ -551,7 +492,7 @@ function keyListener(e) {
 				"transform",
 				`rotate(${tanks[0].angle}deg)`
 			);
-			setStats(tanks[0]);
+			tanks[0].setStats();
 		},
 		65: () => {
 			tanks[0].angle = (tanks[0].angle - 45 + 360) % 360;
@@ -559,24 +500,24 @@ function keyListener(e) {
 				"transform",
 				`rotate(${tanks[0].angle}deg)`
 			);
-			setStats(tanks[0]);
+			tanks[0].setStats();
 		},
 		38: () => {
 			if (tagTimer > 0 && tanks[1].tagged) return;
 			tanks[1].lastDriveTime = performance.now();
 			if (tanks[1].speed !== 0) {
-				queueEngineStop(tanks[1]);
+				tanks[1].queueEngineStop();
 			}
 			tanks[1].speed = Math.min(1, tanks[1].speed + 1);
-			queueEngineStart(tanks[1]);
+			tanks[1].queueEngineStart();
 		},
 		40: () => {
 			if (tagTimer > 0 && tanks[1].tagged) return;
 			tanks[1].speed = Math.max(-1, tanks[1].speed - 1);
 			if (tanks[1].speed === 0) {
-				queueEngineStop(tanks[1]);
+				tanks[1].queueEngineStop();
 			} else {
-				queueEngineStart(tanks[1]);
+				tanks[1].queueEngineStart();
 			}
 		},
 		39: () => {
@@ -585,7 +526,7 @@ function keyListener(e) {
 				"transform",
 				`rotate(${tanks[1].angle}deg)`
 			);
-			setStats(tanks[1]);
+			tanks[1].setStats();
 		},
 		37: () => {
 			// console.log("turn left 1");
@@ -594,7 +535,7 @@ function keyListener(e) {
 				"transform",
 				`rotate(${tanks[1].angle}deg)`
 			);
-			setStats(tanks[1]);
+			tanks[1].setStats();
 		},
 		71: () => {
 			$(".tank_0_ghost, .tank_1_ghost").toggle();

@@ -27,6 +27,11 @@ class Sprite {
 			parent.appendChild(spriteElement);
 		}
 	};
-}
 
-window.Sprite = Sprite;
+	// Set the debugging stats
+	setStats = function () {
+		$(`#${this.id}_x_pos`).html(`${Math.floor(this.x)}`);
+		$(`#${this.id}_y_pos`).html(`${Math.floor(this.y)}`);
+		$(`#${this.id}_angle`).html(`${this.angle}`);
+	};
+}

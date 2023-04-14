@@ -48,7 +48,7 @@ class Tank extends Sprite {
 
 	// Set the tagged tank
 	setTagged = function () {
-		console.log(`setTagged ${this.tankId}`);
+		//console.log(`setTagged ${this.tankId}`);
 		$(".tank").removeClass("tagged");
 
 		for (let i = 0; i < tanks.length; i++) {
@@ -61,11 +61,53 @@ class Tank extends Sprite {
 		$(`.tank_${this.tankId}`).addClass("tagged");
 
 		if (playStatus) {
-			sendToBase(this.id);
+			this.sendToBase();
 		}
 		tagTimer = timerMax;
 	};
-}
 
-// make the class available in the global scope
-window.Tank = Tank;
+	sendToBase = function () {
+		console.log("send_to_base(" + this.tankId + ")");
+		const baseX = bases[this.tankId].x + baseWidth / 2 - tankWidth / 2;
+		const baseY = bases[this.tankId].y + baseHeight / 2 - tankHeight / 2;
+		this.x = baseX;
+		this.y = baseY;
+		this.colX = baseX;
+		this.colY = baseY;
+		this.speed = 0;
+
+		$(`#tank_${this.tankId}`).css("opacity", 0);
+		$(`#container_tank_${this.tankId}`).css("opacity", 0);
+
+		this.move();
+		this.queueEngineStop(0);
+
+		$(`#tank_${this.tankId}`).animate({ opacity: 1 }, taggedFadeTime);
+		$(`#container_tank_${this.tankId}`).animate({ opacity: 1 }, 2000);
+	};
+
+	queueEngineStop = function (timeout) {
+		// console.log(`queueEngineStop for tank ${tank.id}`);
+		// console.log(`tank.speed: ${tank.speed}`);
+		if (timeout === undefined) {
+			timeout = engineIdleTimeout;
+		}
+		setTimeout(() => {
+			const lastDriveTime = performance.now() - this.lastDriveTime;
+			if (lastDriveTime > engineIdleTimeout && this.speed === 0) {
+				this.audio.engineIdle.pause();
+				this.audio.engineIdle.currentTime = 0;
+			}
+		}, timeout);
+	};
+
+	queueEngineStart = function () {
+		if (
+			this.speed !== 0 &&
+			this.audio.engineStart.paused &&
+			this.audio.engineIdle.paused
+		) {
+			this.audio.engineStart.play();
+		}
+	};
+}
