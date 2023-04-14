@@ -62,7 +62,7 @@ class Sprite {
 		this.angle = props.angle;
 		this.tagged = props.false;
 		this.tagable = props.tagable;
-		this.lastDriveTime = Date.now();
+		this.lastDriveTime = performance.now();
 	}
 
 	draw = function (parent) {
@@ -83,7 +83,7 @@ class Tank extends Sprite {
 		//console.log("Tank constructor");
 		super(props);
 		this.tagable = true;
-		this.lastDriveTime = Date.now();
+		this.lastDriveTime = performance.now();
 		this.audio = {
 			engineIdle: new Audio("sound/engine_idle.mp3"),
 			engineStart: new Audio("sound/engine_start1.mp3"),
@@ -132,7 +132,7 @@ function queueEngineStop(tank, timeout) {
 		timeout = engineIdleTimeout;
 	}
 	setTimeout(() => {
-		const lastDriveTime = Date.now() - tank.lastDriveTime;
+		const lastDriveTime = performance.now() - tank.lastDriveTime;
 		if (lastDriveTime > engineIdleTimeout && tank.speed === 0) {
 			tank.audio.engineIdle.pause();
 			tank.audio.engineIdle.currentTime = 0;
@@ -633,7 +633,7 @@ function keyListener(e) {
 		},
 		87: () => {
 			if (tagTimer > 0 && tanks[0].tagged) return;
-			tanks[0].lastDriveTime = Date.now();
+			tanks[0].lastDriveTime = performance.now();
 			if (tanks[0].speed !== 0) queueEngineStop(tanks[0]);
 			tanks[0].speed++;
 			tanks[0].speed = Math.min(1, tanks[0].speed);
@@ -641,7 +641,7 @@ function keyListener(e) {
 		},
 		83: () => {
 			if (tagTimer > 0 && tanks[0].tagged) return;
-			tanks[0].lastDriveTime = Date.now();
+			tanks[0].lastDriveTime = performance.now();
 			tanks[0].speed--;
 			if (tanks[0].speed === 0) queueEngineStop(tanks[0]);
 			if (tanks[0].speed !== 0) queueEngineStart(tanks[0]);
@@ -665,7 +665,7 @@ function keyListener(e) {
 		},
 		38: () => {
 			if (tagTimer > 0 && tanks[1].tagged) return;
-			tanks[1].lastDriveTime = Date.now();
+			tanks[1].lastDriveTime = performance.now();
 			if (tanks[1].speed !== 0) {
 				queueEngineStop(tanks[1]);
 			}
