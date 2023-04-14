@@ -336,110 +336,6 @@ function setScroll(pos_left, pos_top, view_id) {
 		.scrollTop(new_top);
 }
 
-// See if an object needs to move
-function checkMove(tank_obj) {
-	// If tag_timer is greater than zero and the tank is tagged, return
-	if (tagTimer > 0 && tank_obj.tagged) return;
-
-	var curr_x = tank_obj.x;
-	var curr_y = tank_obj.y;
-
-	if (tank_obj.speed != 0) {
-		// Move the tank
-		if (tank_obj.speed == 1) {
-			// forward
-			if (tank_obj.angle == 0) {
-				// North
-				tank_obj.y -= moveRes * 2;
-			} else if (tank_obj.angle == 45) {
-				// Northeast
-				tank_obj.y -= moveResDiag * 2;
-				tank_obj.x += moveResDiag * 2;
-			} else if (tank_obj.angle == 90) {
-				// East
-				tank_obj.x += moveRes * 2;
-			} else if (tank_obj.angle == 135) {
-				// Southeast
-				tank_obj.x += moveResDiag * 2;
-				tank_obj.y += moveResDiag * 2;
-			} else if (tank_obj.angle == 180) {
-				// South
-				tank_obj.y += moveRes * 2;
-			} else if (tank_obj.angle == 225) {
-				// Southwest
-				tank_obj.x -= moveResDiag * 2;
-				tank_obj.y += moveResDiag * 2;
-			} else if (tank_obj.angle == 270) {
-				// West
-				tank_obj.x -= moveRes * 2;
-			} else if (tank_obj.angle == 315) {
-				// Northwest
-				tank_obj.x -= moveResDiag * 2;
-				tank_obj.y -= moveResDiag * 2;
-			}
-		} else if (tank_obj.speed == -1) {
-			// backward
-			if (tank_obj.angle == 0) {
-				// South
-				tank_obj.y += moveRes;
-			} else if (tank_obj.angle == 45) {
-				// Southwest
-				tank_obj.y += moveResDiag;
-				tank_obj.x -= moveResDiag;
-			} else if (tank_obj.angle == 90) {
-				// West
-				tank_obj.x -= moveRes;
-			} else if (tank_obj.angle == 135) {
-				// Northwest
-				tank_obj.x -= moveResDiag;
-				tank_obj.y -= moveResDiag;
-			} else if (tank_obj.angle == 180) {
-				// North
-				tank_obj.y -= moveRes;
-			} else if (tank_obj.angle == 225) {
-				// Northeast
-				tank_obj.x += moveResDiag;
-				tank_obj.y -= moveResDiag;
-			} else if (tank_obj.angle == 270) {
-				// East
-				tank_obj.x += moveRes;
-			} else if (tank_obj.angle == 315) {
-				// Southeast
-				tank_obj.x += moveResDiag;
-				tank_obj.y += moveResDiag;
-			}
-		}
-
-		// Check for canvas boundary collision
-		if (tank_obj.x < 0) {
-			tank_obj.x = 0;
-		} else if (tank_obj.x > mapWidth - tankWidth - mapBorder * 2) {
-			tank_obj.x = mapWidth - tankWidth - mapBorder * 2;
-		}
-		if (tank_obj.y < 0) {
-			tank_obj.y = 0;
-		} else if (tank_obj.y > mapHeight - tankHeight - mapBorder * 2) {
-			tank_obj.y = mapHeight - tankHeight - mapBorder * 2;
-		}
-
-		// Set tank collision x and y
-		tank_obj.colX = tank_obj.x;
-		tank_obj.colY = tank_obj.y;
-
-		// Check object against all others for collisions
-		if (
-			checkArrayCollision(trees, tank_obj) ||
-			checkArrayCollision(tanks, tank_obj)
-		) {
-			tank_obj.x = curr_x;
-			tank_obj.y = curr_y;
-		} else {
-			tank_obj.move();
-			tank_obj.setStats();
-		}
-	}
-}
-
 function togglePause() {
 	playStatus ? stopGame() : startGame();
 	$(".paused").toggle();
@@ -556,8 +452,8 @@ function keyListener(e) {
 
 // Loop the game
 function playGame() {
-	checkMove(tanks[0], tanks[1]);
-	checkMove(tanks[1], tanks[0]);
+	tanks[0].checkMove();
+	tanks[1].checkMove();
 
 	$("#timer").html(timer);
 	$("#tag_timer").html(tagTimer);

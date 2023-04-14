@@ -110,4 +110,108 @@ class Tank extends Sprite {
 			this.audio.engineStart.play();
 		}
 	};
+
+	// See if an object needs to move
+	checkMove = function () {
+		// If tag_timer is greater than zero and the tank is tagged, return
+		if (tagTimer > 0 && this.tagged) return;
+
+		var curr_x = this.x;
+		var curr_y = this.y;
+
+		if (this.speed != 0) {
+			// Move the tank
+			if (this.speed == 1) {
+				// forward
+				if (this.angle == 0) {
+					// North
+					this.y -= moveRes * 2;
+				} else if (this.angle == 45) {
+					// Northeast
+					this.y -= moveResDiag * 2;
+					this.x += moveResDiag * 2;
+				} else if (this.angle == 90) {
+					// East
+					this.x += moveRes * 2;
+				} else if (this.angle == 135) {
+					// Southeast
+					this.x += moveResDiag * 2;
+					this.y += moveResDiag * 2;
+				} else if (this.angle == 180) {
+					// South
+					this.y += moveRes * 2;
+				} else if (this.angle == 225) {
+					// Southwest
+					this.x -= moveResDiag * 2;
+					this.y += moveResDiag * 2;
+				} else if (this.angle == 270) {
+					// West
+					this.x -= moveRes * 2;
+				} else if (this.angle == 315) {
+					// Northwest
+					this.x -= moveResDiag * 2;
+					this.y -= moveResDiag * 2;
+				}
+			} else if (this.speed == -1) {
+				// backward
+				if (this.angle == 0) {
+					// South
+					this.y += moveRes;
+				} else if (this.angle == 45) {
+					// Southwest
+					this.y += moveResDiag;
+					this.x -= moveResDiag;
+				} else if (this.angle == 90) {
+					// West
+					this.x -= moveRes;
+				} else if (this.angle == 135) {
+					// Northwest
+					this.x -= moveResDiag;
+					this.y -= moveResDiag;
+				} else if (this.angle == 180) {
+					// North
+					this.y -= moveRes;
+				} else if (this.angle == 225) {
+					// Northeast
+					this.x += moveResDiag;
+					this.y -= moveResDiag;
+				} else if (this.angle == 270) {
+					// East
+					this.x += moveRes;
+				} else if (this.angle == 315) {
+					// Southeast
+					this.x += moveResDiag;
+					this.y += moveResDiag;
+				}
+			}
+
+			// Check for canvas boundary collision
+			if (this.x < 0) {
+				this.x = 0;
+			} else if (this.x > mapWidth - tankWidth - mapBorder * 2) {
+				this.x = mapWidth - tankWidth - mapBorder * 2;
+			}
+			if (this.y < 0) {
+				this.y = 0;
+			} else if (this.y > mapHeight - tankHeight - mapBorder * 2) {
+				this.y = mapHeight - tankHeight - mapBorder * 2;
+			}
+
+			// Set tank collision x and y
+			this.colX = this.x;
+			this.colY = this.y;
+
+			// Check object against all others for collisions
+			if (
+				checkArrayCollision(trees, this) ||
+				checkArrayCollision(tanks, this)
+			) {
+				this.x = curr_x;
+				this.y = curr_y;
+			} else {
+				this.move();
+				this.setStats();
+			}
+		}
+	};
 }
