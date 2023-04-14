@@ -134,11 +134,16 @@ function queueEngineStart(tank) {
 }
 
 function buildAssets() {
-	// clear the arrays
+	// clear the arrays, and the canvas_0 and canvas_1 elements
 	tanks = [];
 	tankGhosts = [];
 	bases = [];
 	trees = [];
+
+	const canvas0 = document.getElementById("canvas_0");
+	const canvas1 = document.getElementById("canvas_1");
+	canvas0.innerHTML = "";
+	canvas1.innerHTML = "";
 
 	const mapPortions = 1 / numTanks;
 	const portionWidth = mapWidth * mapPortions;
@@ -194,7 +199,6 @@ function buildAssets() {
 
 		base.draw(document.getElementById("canvas_0"));
 		base.draw(document.getElementById("canvas_1"));
-		base.draw(document.getElementById("canvas_2"));
 		bases.push(base);
 
 		// Move the tag_timer to the tank base
@@ -297,6 +301,10 @@ function buildAssets() {
 // Initialize the game
 function init() {
 	buildAssets();
+	stopGame();
+	$(".paused").show();
+	tagTimer = timerMax;
+	$(".global_tag_timer").html(Math.ceil(tagTimer / 50));
 
 	// Initialize tank stats
 	setStats(tanks[0]);
