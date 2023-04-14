@@ -614,7 +614,13 @@ const tankProfile1 = $(".tank_1, .tank_1_ghost");
 
 function keyListener(e) {
 	// If playStatus is false and key is not 32, return
-	if (!playStatus && e.keyCode !== 32 && e.keyCode !== 73 && e.keyCode !== 71)
+	if (
+		!playStatus &&
+		e.keyCode !== 32 &&
+		e.keyCode !== 73 &&
+		e.keyCode !== 71 &&
+		e.keyCode !== 82
+	)
 		return;
 
 	const validKeys = {
