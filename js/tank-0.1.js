@@ -46,85 +46,6 @@ let doCheckMove = false; // Track if we want to move an object
 let validKey = false; // Track if a valid game key is pressed
 let playStatus = false; // Track game mode, pause or play
 
-class Sprite {
-	constructor(props) {
-		this.id = props.id;
-		this.className = props.className;
-		this.x = props.x;
-		this.y = props.y;
-		this.w = props.w;
-		this.h = props.h;
-		this.colX = props.colX; // Collision box x offset
-		this.colY = props.colY; // Collision box y offset
-		this.colW = props.colW; // Collision box width
-		this.colH = props.colH; // Collision box height
-		this.speed = props.speed;
-		this.angle = props.angle;
-		this.tagged = props.false;
-		this.tagable = props.tagable;
-		this.lastDriveTime = performance.now();
-	}
-
-	draw = function (parent) {
-		if (parent) {
-			const spriteElement = document.createElement("div");
-			spriteElement.id = this.id;
-			spriteElement.style.left = this.x + "px";
-			spriteElement.style.top = this.y + "px";
-			spriteElement.className = this.className;
-			parent.appendChild(spriteElement);
-		}
-	};
-}
-
-// Tank class extends the Sprite class
-class Tank extends Sprite {
-	constructor(props) {
-		//console.log("Tank constructor");
-		super(props);
-		this.tagable = true;
-		this.lastDriveTime = performance.now();
-		this.audio = {
-			engineIdle: new Audio("sound/engine_idle.mp3"),
-			engineStart: new Audio("sound/engine_start1.mp3"),
-			engineStop: new Audio("sound/engine_stop1.mp3"),
-		};
-
-		this.audio.engineStart.addEventListener("ended", () => {
-			this.audio.engineIdle.loop = true;
-			if (playStatus) this.audio.engineIdle.play();
-		});
-		this.audio.engineIdle.addEventListener("pause", () => {
-			console.log("engineIdle paused");
-			if (playStatus) this.audio.engineStop.play();
-		});
-		this.audio.engineIdle.addEventListener("ended", () => {
-			console.log("engineIdle ended");
-			this.audio.engineStop.play();
-		});
-	}
-	move = function () {
-		// Move the tank object
-		$("." + this.id).animate(
-			{
-				left: "" + this.x + "px",
-				top: "" + this.y + "px",
-			},
-			1
-		);
-		// Move the corresponding tankGhost object
-		$("." + this.id + "_ghost").animate(
-			{
-				left: "" + this.x - ghostWidth / 2 + "px",
-				top: "" + this.y - ghostWidth / 2 + "px",
-			},
-			1
-		);
-
-		setScroll(this.x, this.y, this.id);
-	};
-}
-
 function queueEngineStop(tank, timeout) {
 	// console.log(`queueEngineStop for tank ${tank.id}`);
 	// console.log(`tank.speed: ${tank.speed}`);
@@ -141,9 +62,6 @@ function queueEngineStop(tank, timeout) {
 }
 
 function queueEngineStart(tank) {
-	// console.log(`queueEngineStart for tank ${tank.id}`);
-	// console.log(`tank.speed: ${tank.speed}`);
-	// if the tank is moving and engineStart1 and engineIdle1 are not alredy playing, start the engine
 	if (
 		tank.speed !== 0 &&
 		tank.audio.engineStart.paused &&
@@ -186,7 +104,8 @@ function buildAssets() {
 		let baseCollision = true;
 		let attempts = 0;
 
-		// check for collisiions between bases and only set baseX and baseY if there is no collision
+		// check for collisiions between bases and only set baseX and baseY
+		// if there is no collision
 		while (baseCollision) {
 			attempts++;
 			baseX =
@@ -238,6 +157,7 @@ function buildAssets() {
 		// Create the tank
 		const tank = new Tank({
 			id: `tank_${i}`,
+			tankId: i,
 			className: `tank_${i} tank rotate-135`,
 			x: baseX + baseWidth / 2 - tankWidth / 2,
 			y: baseY + baseHeight / 2 - tankHeight / 2,
@@ -352,10 +272,12 @@ function init() {
 	// Set the canvas border width css
 	$(".canvas").css("border-width", mapBorder);
 
-	var rand = Math.floor(Math.random() * 2);
+	const rand = Math.floor(Math.random() * 2);
+	console.log("Set tagged rand: " + rand);
+
 	$(`.tag_timer`).hide();
 	$(`.tag_timer_${rand}`).fadeIn(500);
-	setTagged("tank_" + rand);
+	tanks[rand].setTagged();
 
 	document.onkeydown = keyListener;
 	playStatus = false;
@@ -367,30 +289,6 @@ function init() {
 	// } else {
 	// 	console.log("Browser is not in full-screen mode");
 	// }
-}
-
-// Set the tagged tank
-function setTagged(tankId) {
-	//console.log("set_tagged(" + tankId + ")");
-
-	$(".tank").removeClass("tagged");
-
-	if (tanks[0].id == tankId) {
-		tanks[0].tagged = true;
-		tanks[1].tagged = false;
-		$(".tag_timer_0").fadeIn(500);
-		$(".tank_0").addClass("tagged");
-	} else if (tanks[1].id == tankId) {
-		tanks[0].tagged = false;
-		tanks[1].tagged = true;
-		$(".tag_timer_1").fadeIn(500);
-		$(".tank_1").addClass("tagged");
-	}
-
-	if (playStatus) {
-		sendToBase(tankId);
-	}
-	tagTimer = timerMax;
 }
 
 function sendToBase(tankId) {
@@ -438,7 +336,7 @@ function checkArrayCollision(array, obj) {
 				// 	"tank collision detected: " + array[i].id + " and " + obj.id
 				// );
 				if (!checkArrayCollision(bases, array[i])) {
-					setTagged(array[i].id);
+					array[i].setTagged();
 				} else {
 					// console.log("base collision detected");
 				}
