@@ -103,6 +103,26 @@ class Tank extends Sprite {
 			this.audio.engineStop.play();
 		});
 	}
+	move = function () {
+		// Move the tank object
+		$("." + this.id).animate(
+			{
+				left: "" + this.x + "px",
+				top: "" + this.y + "px",
+			},
+			1
+		);
+		// Move the corresponding tankGhost object
+		$("." + this.id + "_ghost").animate(
+			{
+				left: "" + this.x - ghostWidth / 2 + "px",
+				top: "" + this.y - ghostWidth / 2 + "px",
+			},
+			1
+		);
+
+		setScroll(this.x, this.y, this.id);
+	};
 }
 
 function queueEngineStop(tank, timeout) {
@@ -388,7 +408,7 @@ function sendToBase(tankId) {
 			$(`#tank_${i}`).css("opacity", 0);
 			$(`#container_tank_${i}`).css("opacity", 0);
 
-			moveTank(tanks[i]);
+			tanks[i].move();
 			queueEngineStop(tanks[i], 0);
 
 			$(`#tank_${i}`).animate({ opacity: 1 }, taggedFadeTime);
@@ -448,28 +468,6 @@ function checkObjectCollision(obj1, obj2) {
 	}
 	// no collision detected
 	return false;
-}
-
-// Move an object
-function moveTank(tank_obj) {
-	// Move the tank object
-	$("." + tank_obj.id).animate(
-		{
-			left: "" + tank_obj.x + "px",
-			top: "" + tank_obj.y + "px",
-		},
-		1
-	);
-	// Move the corresponding tankGhost object
-	$("." + tank_obj.id + "_ghost").animate(
-		{
-			left: "" + tank_obj.x - ghostWidth / 2 + "px",
-			top: "" + tank_obj.y - ghostWidth / 2 + "px",
-		},
-		1
-	);
-
-	setScroll(tank_obj.x, tank_obj.y, tank_obj.id);
 }
 
 // Scroll the map
@@ -590,7 +588,7 @@ function checkMove(tank_obj) {
 			tank_obj.x = curr_x;
 			tank_obj.y = curr_y;
 		} else {
-			moveTank(tank_obj);
+			tank_obj.move();
 			setStats(tank_obj);
 		}
 	}
