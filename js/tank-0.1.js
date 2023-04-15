@@ -341,10 +341,6 @@ function togglePause() {
 	$(".paused").toggle();
 }
 
-// Cache frequently accessed elements
-const tankProfile0 = $(".tank_0, .tank_0_ghost");
-const tankProfile1 = $(".tank_1, .tank_1_ghost");
-
 function keyListener(e) {
 	// If playStatus is false and key is not 32, return
 	if (
